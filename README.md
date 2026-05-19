@@ -1,43 +1,63 @@
-# Svelte + Vite
+# Gridiron Coach
 
-This template should help get you started developing with Svelte in Vite.
+A browser-based learning game for American Football formations, positions, and strategic matchups. No server required — fully static, deployable to GitHub Pages.
 
-## Recommended IDE Setup
+## What it is
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+Gridiron Coach teaches football strategy through an interactive play-calling loop:
 
-## Need an official Svelte framework?
+1. **Scout** the opposing formation on a live field diagram
+2. **Call** your formation and play type as a counter
+3. **Watch** the play resolve with an animated outcome
+4. **Learn** from the breakdown — why it worked, why it didn't, and what each position was responsible for
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+Every element of the UI doubles as a teaching surface. Hover any player dot to see their role; click to go deeper. Every football term is linked to a searchable glossary.
 
-## Technical considerations
+## Current state — Phase 0
 
-**Why use this over SvelteKit?**
+The Sandbox and Glossary are live. Phase 1 (the play-calling game loop) is next.
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+**Sandbox** — Browse all formations (offense and defense), inspect player alignments, read strengths/weaknesses, and toggle "Tells" to see pre-snap reads. Switch to the Positions tab to explore every position's responsibilities and coaching notes.
 
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+**Glossary** — 40+ terms covering formations, coverages, gaps, down-and-distance, personnel packages, and more. Searchable, with related-term navigation.
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+## Tech stack
 
-**Why include `.vscode/extensions.json`?**
+- **Svelte 5** + **Vite** — component framework and build tool
+- **SVG** — field and player rendering (no canvas, no game engine)
+- **Svelte stores** — reactive state, persisted to `localStorage` in later phases
+- **GitHub Actions** — automatic deploy to GitHub Pages on push to `main`
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+## Development
 
-**Why enable `checkJs` in the JS template?**
-
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+```bash
+npm install
+npm run dev       # localhost:5173
+npm run build     # production build → dist/
 ```
+
+## Deploy to GitHub Pages
+
+1. Create a GitHub repo and push this branch to `main`.
+2. In the repo settings → **Pages**, set source to **GitHub Actions**.
+3. Every push to `main` triggers the deploy workflow at `.github/workflows/deploy.yml`.
+
+## Project structure
+
+```
+src/
+  data/           # JSON — formations, positions, plays, matchups, glossary
+  lib/
+    components/   # Svelte UI components (field, glossary drawer, cards)
+    stores/       # Svelte writable stores
+  routes/         # Page-level components (Sandbox, Coach, Drill, Tutorial)
+  App.svelte
+  app.css
+.github/
+  workflows/
+    deploy.yml    # GitHub Pages deploy pipeline
+```
+
+## Design
+
+Full design rationale and phased build plan: [DESIGN.md](DESIGN.md)
