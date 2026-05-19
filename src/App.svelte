@@ -1,5 +1,6 @@
 <script>
   import Sandbox from './routes/Sandbox.svelte';
+  import Coach from './routes/Coach.svelte';
   import GlossaryDrawer from './lib/components/GlossaryDrawer.svelte';
   import { glossaryOpen, activeRoute } from './lib/stores/ui.js';
 
@@ -9,8 +10,8 @@
 
   const routes = [
     { id: 'sandbox', label: 'Sandbox' },
-    { id: 'coach',   label: 'Coach Mode', disabled: true },
-    { id: 'drill',   label: 'Drill',      disabled: true },
+    { id: 'coach',   label: 'Coach Mode' },
+    { id: 'drill',   label: 'Drill',     disabled: true },
   ];
 </script>
 
@@ -41,6 +42,8 @@
   <main class="main-content">
     {#if $activeRoute === 'sandbox'}
       <Sandbox />
+    {:else if $activeRoute === 'coach'}
+      <Coach />
     {/if}
   </main>
 

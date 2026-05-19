@@ -1,0 +1,246 @@
+{
+  "offense": {
+    "i_formation": [
+      {
+        "id": "power_run",
+        "name": "Power Run",
+        "type": "run",
+        "tag": "RUN",
+        "description": "FB lead block through the A-gap. The signature I-Formation play — pure brute force."
+      },
+      {
+        "id": "outside_run",
+        "name": "Outside Run",
+        "type": "run",
+        "tag": "RUN",
+        "description": "RB sweeps the edge behind a pulling guard. Works when the defense loads the middle."
+      },
+      {
+        "id": "play_action",
+        "name": "Play Action Pass",
+        "type": "pass",
+        "tag": "PASS",
+        "description": "Fake the handoff, attack down the field. Safeties that cheat for the run get burned."
+      },
+      {
+        "id": "screen_pass",
+        "name": "Screen Pass",
+        "type": "pass",
+        "tag": "PASS",
+        "description": "Quick dump-off to the RB with blockers set up in front. A great blitz beater."
+      }
+    ],
+    "shotgun_trips": [
+      {
+        "id": "quick_pass",
+        "name": "Quick Pass",
+        "type": "pass",
+        "tag": "PASS",
+        "description": "3-step drop, ball out before the rush arrives. Neutralizes any blitz."
+      },
+      {
+        "id": "deep_shot",
+        "name": "Deep Shot",
+        "type": "pass",
+        "tag": "PASS",
+        "description": "Vertical routes attacking single-covered WRs. High risk, high reward."
+      },
+      {
+        "id": "draw",
+        "name": "Draw Run",
+        "type": "run",
+        "tag": "RUN",
+        "description": "RB run disguised as a pass set-up. Punishes linebackers who drop into coverage."
+      },
+      {
+        "id": "rpo",
+        "name": "RPO",
+        "type": "option",
+        "tag": "OPT",
+        "description": "QB reads a defender post-snap and decides run or pass. Puts the defense in a dilemma."
+      }
+    ],
+    "singleback": [
+      {
+        "id": "inside_run",
+        "name": "Inside Zone",
+        "type": "run",
+        "tag": "RUN",
+        "description": "RB reads the line and cuts to the first open gap. Hard to key on pre-snap."
+      },
+      {
+        "id": "outside_run",
+        "name": "Outside Run",
+        "type": "run",
+        "tag": "RUN",
+        "description": "RB sweeps the edge. Needs the corner sealed — a big gain or a loss."
+      },
+      {
+        "id": "crossing_routes",
+        "name": "Crossing Routes",
+        "type": "pass",
+        "tag": "PASS",
+        "description": "WRs cross underneath. Destroys man coverage — defenders run into each other."
+      },
+      {
+        "id": "play_action",
+        "name": "Play Action Pass",
+        "type": "pass",
+        "tag": "PASS",
+        "description": "Fake handoff, throw deep. More effective after the run game is established."
+      }
+    ],
+    "goal_line_off": [
+      {
+        "id": "fb_lead",
+        "name": "FB Lead",
+        "type": "run",
+        "tag": "RUN",
+        "description": "FB dives first, RB follows the path. Maximum push at the point of attack."
+      },
+      {
+        "id": "qb_sneak",
+        "name": "QB Sneak",
+        "type": "run",
+        "tag": "RUN",
+        "description": "QB sneaks over the center. Highest short-yardage conversion rate in the game."
+      },
+      {
+        "id": "power_sweep",
+        "name": "Power Sweep",
+        "type": "run",
+        "tag": "RUN",
+        "description": "RB runs wide behind a pulling TE. A big gain if the edge is sealed; a loss if it isn't."
+      },
+      {
+        "id": "play_action_fade",
+        "name": "Play-Action Fade",
+        "type": "pass",
+        "tag": "PASS",
+        "description": "Fake the power run, throw back-shoulder fade to the corner. Catches the defense flat-footed."
+      }
+    ]
+  },
+  "defense": {
+    "four_three": [
+      {
+        "id": "cover_2",
+        "name": "Cover 2",
+        "type": "zone",
+        "tag": "ZONE",
+        "description": "Two safeties split the deep field. CBs play underneath. Limits big plays."
+      },
+      {
+        "id": "cover_3",
+        "name": "Cover 3",
+        "type": "zone",
+        "tag": "ZONE",
+        "description": "Three defenders split the deep thirds, one safety helps run. A sound all-around call."
+      },
+      {
+        "id": "blitz",
+        "name": "MLB Blitz",
+        "type": "pressure",
+        "tag": "BLITZ",
+        "description": "Middle linebacker shoots the A-gap. If it works, the play is dead before it starts."
+      },
+      {
+        "id": "man_press",
+        "name": "Man Press",
+        "type": "man",
+        "tag": "MAN",
+        "description": "CBs jam receivers at the line. Disrupts timing — but one beatdown is a big play."
+      }
+    ],
+    "nickel": [
+      {
+        "id": "cover_2",
+        "name": "Cover 2",
+        "type": "zone",
+        "tag": "ZONE",
+        "description": "Five DBs in zone. Built for passing downs — the extra coverage takes away checkdowns."
+      },
+      {
+        "id": "cover_1_robber",
+        "name": "Cover 1 Robber",
+        "type": "hybrid",
+        "tag": "MAN",
+        "description": "Man coverage outside, safety roams underneath to poach short routes."
+      },
+      {
+        "id": "slot_blitz",
+        "name": "Slot Blitz",
+        "type": "pressure",
+        "tag": "BLITZ",
+        "description": "Nickelback blitzes from the slot. The offense rarely IDs this pre-snap."
+      },
+      {
+        "id": "zone_drop",
+        "name": "Zone Drop",
+        "type": "zone",
+        "tag": "ZONE",
+        "description": "All five DBs drop into coverage. Takes away every passing lane but gives up the run."
+      }
+    ],
+    "stacked_box": [
+      {
+        "id": "all_out_blitz",
+        "name": "All-Out Blitz",
+        "type": "pressure",
+        "tag": "BLITZ",
+        "description": "Eight defenders converge on the line. Ball must be out in under two seconds or the QB is buried."
+      },
+      {
+        "id": "cover_1_rob",
+        "name": "Cover 1 Rob",
+        "type": "man",
+        "tag": "MAN",
+        "description": "Man coverage everywhere with one deep safety as a roaming center fielder."
+      },
+      {
+        "id": "read_blitz",
+        "name": "Read Blitz",
+        "type": "pressure",
+        "tag": "BLITZ",
+        "description": "LBs read the snap and delay-blitz — harder to pick up in protection than a fire blitz."
+      },
+      {
+        "id": "spy_contain",
+        "name": "Spy + Contain",
+        "type": "hybrid",
+        "tag": "ZONE",
+        "description": "One LB spies the QB, OLBs crash the edges. Neutralizes scramble threats."
+      }
+    ],
+    "goal_line_def": [
+      {
+        "id": "gap_fill",
+        "name": "Gap Fill",
+        "type": "run_stop",
+        "tag": "RUN",
+        "description": "Five DL each own a gap. Nothing should get through on the ground."
+      },
+      {
+        "id": "slant_stunts",
+        "name": "Slant & Stunts",
+        "type": "run_stop",
+        "tag": "RUN",
+        "description": "DL slants one direction, creates confusion in OL blocking assignments."
+      },
+      {
+        "id": "goal_line_blitz",
+        "name": "Goal Line Blitz",
+        "type": "pressure",
+        "tag": "BLITZ",
+        "description": "LB shoots a gap on the snap. A single back can't account for six rushers."
+      },
+      {
+        "id": "man_press_gl",
+        "name": "Man Press",
+        "type": "man",
+        "tag": "MAN",
+        "description": "Physical press on the lone WR. Jams the route before it can develop."
+      }
+    ]
+  }
+}

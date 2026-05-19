@@ -1,0 +1,77 @@
+{
+  "base": {
+    "i_formation_vs_four_three":   { "mean_yards": 4.5, "stdev": 3.2, "turnover_chance": 0.07, "big_play_chance": 0.05 },
+    "i_formation_vs_nickel":       { "mean_yards": 5.5, "stdev": 3.5, "turnover_chance": 0.06, "big_play_chance": 0.06 },
+    "i_formation_vs_stacked_box":  { "mean_yards": 3.5, "stdev": 2.8, "turnover_chance": 0.09, "big_play_chance": 0.04 },
+    "i_formation_vs_goal_line_def":{ "mean_yards": 2.5, "stdev": 2.2, "turnover_chance": 0.11, "big_play_chance": 0.03 },
+
+    "shotgun_trips_vs_four_three":   { "mean_yards": 7.5, "stdev": 5.8, "turnover_chance": 0.09, "big_play_chance": 0.12 },
+    "shotgun_trips_vs_nickel":       { "mean_yards": 6.0, "stdev": 5.2, "turnover_chance": 0.08, "big_play_chance": 0.09 },
+    "shotgun_trips_vs_stacked_box":  { "mean_yards": 8.0, "stdev": 6.5, "turnover_chance": 0.11, "big_play_chance": 0.16 },
+    "shotgun_trips_vs_goal_line_def":{ "mean_yards": 7.0, "stdev": 5.5, "turnover_chance": 0.08, "big_play_chance": 0.13 },
+
+    "singleback_vs_four_three":   { "mean_yards": 5.5, "stdev": 4.2, "turnover_chance": 0.08, "big_play_chance": 0.08 },
+    "singleback_vs_nickel":       { "mean_yards": 5.0, "stdev": 4.0, "turnover_chance": 0.08, "big_play_chance": 0.09 },
+    "singleback_vs_stacked_box":  { "mean_yards": 5.0, "stdev": 4.5, "turnover_chance": 0.10, "big_play_chance": 0.07 },
+    "singleback_vs_goal_line_def":{ "mean_yards": 4.0, "stdev": 3.5, "turnover_chance": 0.09, "big_play_chance": 0.05 },
+
+    "goal_line_off_vs_four_three":   { "mean_yards": 3.5, "stdev": 2.5, "turnover_chance": 0.07, "big_play_chance": 0.03 },
+    "goal_line_off_vs_nickel":       { "mean_yards": 4.5, "stdev": 3.0, "turnover_chance": 0.06, "big_play_chance": 0.05 },
+    "goal_line_off_vs_stacked_box":  { "mean_yards": 2.0, "stdev": 2.0, "turnover_chance": 0.11, "big_play_chance": 0.02 },
+    "goal_line_off_vs_goal_line_def":{ "mean_yards": 1.5, "stdev": 1.8, "turnover_chance": 0.13, "big_play_chance": 0.01 }
+  },
+
+  "off_play_mods": {
+    "power_run":        { "yards_delta":  0.5, "stdev_mult": 0.85, "turnover_delta": -0.01, "big_play_delta": -0.02 },
+    "outside_run":      { "yards_delta": -0.5, "stdev_mult": 1.10, "turnover_delta":  0.01, "big_play_delta":  0.01 },
+    "play_action":      { "yards_delta":  2.5, "stdev_mult": 1.30, "turnover_delta":  0.03, "big_play_delta":  0.06 },
+    "screen_pass":      { "yards_delta": -0.5, "stdev_mult": 0.90, "turnover_delta": -0.01, "big_play_delta": -0.01 },
+    "quick_pass":       { "yards_delta": -1.0, "stdev_mult": 0.70, "turnover_delta": -0.03, "big_play_delta": -0.04 },
+    "deep_shot":        { "yards_delta":  4.0, "stdev_mult": 1.80, "turnover_delta":  0.05, "big_play_delta":  0.16 },
+    "draw":             { "yards_delta": -1.5, "stdev_mult": 0.80, "turnover_delta": -0.01, "big_play_delta": -0.02 },
+    "rpo":              { "yards_delta":  0.5, "stdev_mult": 1.00, "turnover_delta":  0.00, "big_play_delta":  0.02 },
+    "inside_run":       { "yards_delta":  0.0, "stdev_mult": 0.90, "turnover_delta": -0.01, "big_play_delta": -0.02 },
+    "crossing_routes":  { "yards_delta":  1.5, "stdev_mult": 1.00, "turnover_delta":  0.01, "big_play_delta":  0.03 },
+    "fb_lead":          { "yards_delta":  1.0, "stdev_mult": 0.80, "turnover_delta": -0.01, "big_play_delta": -0.02 },
+    "qb_sneak":         { "yards_delta": -0.5, "stdev_mult": 0.50, "turnover_delta": -0.02, "big_play_delta": -0.04 },
+    "power_sweep":      { "yards_delta":  0.5, "stdev_mult": 1.10, "turnover_delta":  0.00, "big_play_delta":  0.01 },
+    "play_action_fade": { "yards_delta":  3.5, "stdev_mult": 1.50, "turnover_delta":  0.04, "big_play_delta":  0.08 }
+  },
+
+  "def_play_mods": {
+    "cover_2":         { "yards_delta": -0.5, "stdev_mult": 0.90, "turnover_delta":  0.01, "big_play_delta": -0.03 },
+    "cover_3":         { "yards_delta": -1.0, "stdev_mult": 0.85, "turnover_delta":  0.02, "big_play_delta": -0.05 },
+    "blitz":           { "yards_delta": -2.0, "stdev_mult": 1.50, "turnover_delta":  0.03, "big_play_delta":  0.08 },
+    "man_press":       { "yards_delta": -1.5, "stdev_mult": 1.20, "turnover_delta":  0.02, "big_play_delta":  0.04 },
+    "cover_1_robber":  { "yards_delta": -1.2, "stdev_mult": 1.00, "turnover_delta":  0.02, "big_play_delta": -0.02 },
+    "slot_blitz":      { "yards_delta": -1.5, "stdev_mult": 1.30, "turnover_delta":  0.02, "big_play_delta":  0.06 },
+    "zone_drop":       { "yards_delta": -0.5, "stdev_mult": 0.80, "turnover_delta":  0.01, "big_play_delta": -0.04 },
+    "all_out_blitz":   { "yards_delta": -3.0, "stdev_mult": 1.80, "turnover_delta":  0.04, "big_play_delta":  0.12 },
+    "cover_1_rob":     { "yards_delta": -1.0, "stdev_mult": 1.00, "turnover_delta":  0.02, "big_play_delta": -0.01 },
+    "read_blitz":      { "yards_delta": -2.5, "stdev_mult": 1.60, "turnover_delta":  0.03, "big_play_delta":  0.10 },
+    "spy_contain":     { "yards_delta": -1.0, "stdev_mult": 1.00, "turnover_delta":  0.01, "big_play_delta": -0.01 },
+    "gap_fill":        { "yards_delta": -2.0, "stdev_mult": 0.70, "turnover_delta":  0.02, "big_play_delta": -0.04 },
+    "slant_stunts":    { "yards_delta": -1.5, "stdev_mult": 1.20, "turnover_delta":  0.02, "big_play_delta":  0.02 },
+    "goal_line_blitz": { "yards_delta": -2.5, "stdev_mult": 1.40, "turnover_delta":  0.03, "big_play_delta":  0.06 },
+    "man_press_gl":    { "yards_delta": -1.5, "stdev_mult": 1.10, "turnover_delta":  0.02, "big_play_delta":  0.03 }
+  },
+
+  "specific_breakdowns": {
+    "power_run_vs_all_out_blitz":   { "outcome_hint": "stuff",    "text": "Eight came off the line — the FB couldn't handle the extra rusher. Stuffed at the line." },
+    "power_run_vs_gap_fill":        { "outcome_hint": "stuff",    "text": "Five DL each owned a gap. The power run hit a wall with nowhere to cut." },
+    "play_action_vs_stacked_box":   { "outcome_hint": "big_play", "text": "Both safeties bit hard on the run fake. Easy pitch-and-catch with 20 yards of open field behind them." },
+    "play_action_vs_all_out_blitz": { "outcome_hint": "big_play", "text": "Eight in the box — the blitz left man coverage on the outside with no safety help. The fake froze them." },
+    "screen_pass_vs_all_out_blitz": { "outcome_hint": "big_play", "text": "The screen is the perfect blitz beater. By the time the rushers reached the QB, the RB was already 10 yards downfield." },
+    "screen_pass_vs_read_blitz":    { "outcome_hint": "big_play", "text": "The delay blitz pulled defenders past the screen. The RB ran right through them." },
+    "quick_pass_vs_all_out_blitz":  { "outcome_hint": "gain",     "text": "Ball was out in 1.4 seconds — the blitz arrived a beat too late. Quick pass beats the pressure." },
+    "quick_pass_vs_blitz":          { "outcome_hint": "gain",     "text": "3-step drop, ball out before the MLB arrived. Exactly what a quick pass is designed to do." },
+    "deep_shot_vs_four_three":      { "outcome_hint": "big_play", "text": "Four-three only has two safeties helping deep — one got pulled by the trips, leaving a one-on-one outside." },
+    "draw_vs_zone_drop":            { "outcome_hint": "big_play", "text": "All five DBs dropped into coverage. The draw ran right through the vacated middle." },
+    "rpo_vs_stacked_box":           { "outcome_hint": "gain",     "text": "The RPO put the overhang defender in conflict. He committed to the run; the QB pulled and threw." },
+    "crossing_routes_vs_man_press": { "outcome_hint": "big_play", "text": "Crossing routes against man press — receivers running full speed while the defender is jamming air." },
+    "crossing_routes_vs_blitz":     { "outcome_hint": "gain",     "text": "Crossers flooded the zones vacated by the blitzing LB. Easy first down underneath." },
+    "qb_sneak_vs_gap_fill":         { "outcome_hint": "short",    "text": "Every gap was sealed — QB sneak gained an inch, maybe two. Might not be enough." },
+    "fb_lead_vs_nickel":            { "outcome_hint": "gain",     "text": "The nickel package doesn't have the interior size to handle a lead block. Linebacker got blown off the ball." },
+    "play_action_fade_vs_gap_fill": { "outcome_hint": "big_play", "text": "Five DL had zero pass-coverage depth. The fade to the back corner was a touchdown as soon as the ball was snapped." }
+  }
+}
