@@ -18,10 +18,10 @@
 
 {#if visible && posData}
   <foreignObject
-    x={Math.min(x - 5, 65)}
-    y={y < 65 ? y + 5 : y - 30}
-    width="34"
-    height="24"
+    x={Math.min(Math.max(x - 17, 1), 60)}
+    y={y < 68 ? y + 4 : y - 28}
+    width="38"
+    height="26"
     style="overflow: visible; pointer-events: none;"
   >
     <div class="tooltip" xmlns="http://www.w3.org/1999/xhtml">

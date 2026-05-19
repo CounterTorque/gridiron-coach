@@ -22,17 +22,17 @@
       "FB directly behind QB = power run up the middle"
     ],
     "positions": [
-      { "abbr": "WR", "x": 8,  "y": 50, "label": "X" },
-      { "abbr": "LT", "x": 42, "y": 50 },
-      { "abbr": "LG", "x": 45, "y": 50 },
-      { "abbr": "C",  "x": 48, "y": 50 },
-      { "abbr": "RG", "x": 51, "y": 50 },
-      { "abbr": "RT", "x": 54, "y": 50 },
-      { "abbr": "TE", "x": 58, "y": 50 },
-      { "abbr": "WR", "x": 78, "y": 50, "label": "Z" },
-      { "abbr": "QB", "x": 48, "y": 60 },
-      { "abbr": "FB", "x": 48, "y": 67 },
-      { "abbr": "RB", "x": 48, "y": 74 }
+      { "abbr": "WR", "x": 6,  "y": 60, "label": "X" },
+      { "abbr": "LT", "x": 38, "y": 60 },
+      { "abbr": "LG", "x": 44, "y": 60 },
+      { "abbr": "C",  "x": 50, "y": 60 },
+      { "abbr": "RG", "x": 56, "y": 60 },
+      { "abbr": "RT", "x": 62, "y": 60 },
+      { "abbr": "TE", "x": 69, "y": 60 },
+      { "abbr": "WR", "x": 88, "y": 60, "label": "Z" },
+      { "abbr": "QB", "x": 50, "y": 65 },
+      { "abbr": "FB", "x": 50, "y": 75 },
+      { "abbr": "RB", "x": 50, "y": 85 }
     ]
   },
   {
@@ -58,17 +58,17 @@
       "Shotgun snap = pass tendency in most offenses"
     ],
     "positions": [
-      { "abbr": "WR", "x": 12, "y": 50, "label": "X" },
-      { "abbr": "LT", "x": 42, "y": 50 },
-      { "abbr": "LG", "x": 45, "y": 50 },
-      { "abbr": "C",  "x": 48, "y": 50 },
-      { "abbr": "RG", "x": 51, "y": 50 },
-      { "abbr": "RT", "x": 54, "y": 50 },
-      { "abbr": "TE", "x": 64, "y": 50, "label": "Y" },
-      { "abbr": "WR", "x": 72, "y": 50, "label": "Z" },
-      { "abbr": "WR", "x": 80, "y": 50, "label": "Slot" },
-      { "abbr": "RB", "x": 42, "y": 63 },
-      { "abbr": "QB", "x": 48, "y": 63 }
+      { "abbr": "WR", "x": 8,  "y": 60, "label": "X" },
+      { "abbr": "LT", "x": 38, "y": 60 },
+      { "abbr": "LG", "x": 44, "y": 60 },
+      { "abbr": "C",  "x": 50, "y": 60 },
+      { "abbr": "RG", "x": 56, "y": 60 },
+      { "abbr": "RT", "x": 62, "y": 60 },
+      { "abbr": "TE", "x": 71, "y": 60, "label": "Y" },
+      { "abbr": "WR", "x": 80, "y": 60, "label": "Z" },
+      { "abbr": "WR", "x": 88, "y": 60, "label": "Slot" },
+      { "abbr": "RB", "x": 41, "y": 72 },
+      { "abbr": "QB", "x": 50, "y": 72 }
     ]
   },
   {
@@ -94,17 +94,17 @@
       "WR motion before snap can reveal man vs. zone coverage"
     ],
     "positions": [
-      { "abbr": "WR", "x": 10, "y": 50, "label": "X" },
-      { "abbr": "LT", "x": 42, "y": 50 },
-      { "abbr": "LG", "x": 45, "y": 50 },
-      { "abbr": "C",  "x": 48, "y": 50 },
-      { "abbr": "RG", "x": 51, "y": 50 },
-      { "abbr": "RT", "x": 54, "y": 50 },
-      { "abbr": "TE", "x": 60, "y": 50, "label": "Y" },
-      { "abbr": "WR", "x": 72, "y": 50, "label": "Z" },
-      { "abbr": "WR", "x": 82, "y": 50, "label": "Slot" },
-      { "abbr": "QB", "x": 48, "y": 57 },
-      { "abbr": "RB", "x": 48, "y": 67 }
+      { "abbr": "WR", "x": 7,  "y": 60, "label": "X" },
+      { "abbr": "LT", "x": 38, "y": 60 },
+      { "abbr": "LG", "x": 44, "y": 60 },
+      { "abbr": "C",  "x": 50, "y": 60 },
+      { "abbr": "RG", "x": 56, "y": 60 },
+      { "abbr": "RT", "x": 62, "y": 60 },
+      { "abbr": "TE", "x": 69, "y": 60, "label": "Y" },
+      { "abbr": "WR", "x": 80, "y": 60, "label": "Z" },
+      { "abbr": "WR", "x": 88, "y": 60, "label": "Slot" },
+      { "abbr": "QB", "x": 50, "y": 65 },
+      { "abbr": "RB", "x": 50, "y": 76 }
     ]
   },
   {
@@ -130,17 +130,17 @@
       "TE alignment side hints at the direction of the play"
     ],
     "positions": [
-      { "abbr": "WR", "x": 10, "y": 50, "label": "X" },
-      { "abbr": "LT", "x": 40, "y": 50 },
-      { "abbr": "LG", "x": 44, "y": 50 },
-      { "abbr": "C",  "x": 48, "y": 50 },
-      { "abbr": "RG", "x": 52, "y": 50 },
-      { "abbr": "RT", "x": 56, "y": 50 },
-      { "abbr": "TE", "x": 60, "y": 50, "label": "Y1" },
-      { "abbr": "TE", "x": 65, "y": 50, "label": "Y2" },
-      { "abbr": "QB", "x": 48, "y": 58 },
-      { "abbr": "FB", "x": 48, "y": 65 },
-      { "abbr": "RB", "x": 48, "y": 72 }
+      { "abbr": "WR", "x": 6,  "y": 60, "label": "X" },
+      { "abbr": "LT", "x": 33, "y": 60 },
+      { "abbr": "LG", "x": 40, "y": 60 },
+      { "abbr": "C",  "x": 47, "y": 60 },
+      { "abbr": "RG", "x": 54, "y": 60 },
+      { "abbr": "RT", "x": 61, "y": 60 },
+      { "abbr": "TE", "x": 68, "y": 60, "label": "Y1" },
+      { "abbr": "TE", "x": 75, "y": 60, "label": "Y2" },
+      { "abbr": "QB", "x": 47, "y": 65 },
+      { "abbr": "FB", "x": 47, "y": 75 },
+      { "abbr": "RB", "x": 47, "y": 85 }
     ]
   },
   {
@@ -166,17 +166,17 @@
       "MLB cheating toward the strong side = stack against the TE"
     ],
     "positions": [
-      { "abbr": "CB",  "x": 10, "y": 50, "label": "L" },
-      { "abbr": "DE",  "x": 38, "y": 50, "label": "L" },
-      { "abbr": "DT",  "x": 44, "y": 50 },
-      { "abbr": "DT",  "x": 52, "y": 50 },
-      { "abbr": "DE",  "x": 58, "y": 50, "label": "R" },
-      { "abbr": "CB",  "x": 85, "y": 50, "label": "R" },
-      { "abbr": "OLB", "x": 34, "y": 60, "label": "L" },
-      { "abbr": "MLB", "x": 48, "y": 60 },
-      { "abbr": "OLB", "x": 62, "y": 60, "label": "R" },
-      { "abbr": "SS",  "x": 30, "y": 70 },
-      { "abbr": "FS",  "x": 65, "y": 75 }
+      { "abbr": "CB",  "x": 7,  "y": 60, "label": "L" },
+      { "abbr": "DE",  "x": 34, "y": 60, "label": "L" },
+      { "abbr": "DT",  "x": 43, "y": 60 },
+      { "abbr": "DT",  "x": 57, "y": 60 },
+      { "abbr": "DE",  "x": 66, "y": 60, "label": "R" },
+      { "abbr": "CB",  "x": 88, "y": 60, "label": "R" },
+      { "abbr": "OLB", "x": 26, "y": 73, "label": "L" },
+      { "abbr": "MLB", "x": 50, "y": 73 },
+      { "abbr": "OLB", "x": 72, "y": 73, "label": "R" },
+      { "abbr": "SS",  "x": 24, "y": 88 },
+      { "abbr": "FS",  "x": 68, "y": 95 }
     ]
   },
   {
@@ -202,17 +202,17 @@
       "Only two LBs = the offense can exploit run gaps with quick hitting plays"
     ],
     "positions": [
-      { "abbr": "CB",  "x": 8,  "y": 50, "label": "L" },
-      { "abbr": "DE",  "x": 38, "y": 50, "label": "L" },
-      { "abbr": "DT",  "x": 44, "y": 50 },
-      { "abbr": "DT",  "x": 52, "y": 50 },
-      { "abbr": "DE",  "x": 58, "y": 50, "label": "R" },
-      { "abbr": "CB",  "x": 82, "y": 50, "label": "R" },
-      { "abbr": "OLB", "x": 34, "y": 60, "label": "L" },
-      { "abbr": "OLB", "x": 62, "y": 60, "label": "R" },
-      { "abbr": "NB",  "x": 68, "y": 56 },
-      { "abbr": "SS",  "x": 28, "y": 72 },
-      { "abbr": "FS",  "x": 60, "y": 77 }
+      { "abbr": "CB",  "x": 6,  "y": 60, "label": "L" },
+      { "abbr": "DE",  "x": 34, "y": 60, "label": "L" },
+      { "abbr": "DT",  "x": 43, "y": 60 },
+      { "abbr": "DT",  "x": 57, "y": 60 },
+      { "abbr": "DE",  "x": 66, "y": 60, "label": "R" },
+      { "abbr": "CB",  "x": 87, "y": 60, "label": "R" },
+      { "abbr": "OLB", "x": 26, "y": 73, "label": "L" },
+      { "abbr": "OLB", "x": 69, "y": 73, "label": "R" },
+      { "abbr": "NB",  "x": 79, "y": 67 },
+      { "abbr": "SS",  "x": 22, "y": 90 },
+      { "abbr": "FS",  "x": 65, "y": 97 }
     ]
   },
   {
@@ -238,17 +238,17 @@
       "Blitz is likely — quick slants, screens, and hot routes are counters"
     ],
     "positions": [
-      { "abbr": "CB",  "x": 8,  "y": 50, "label": "L" },
-      { "abbr": "DE",  "x": 38, "y": 50, "label": "L" },
-      { "abbr": "DT",  "x": 44, "y": 50 },
-      { "abbr": "DT",  "x": 52, "y": 50 },
-      { "abbr": "DE",  "x": 58, "y": 50, "label": "R" },
-      { "abbr": "CB",  "x": 85, "y": 50, "label": "R" },
-      { "abbr": "OLB", "x": 30, "y": 58, "label": "L" },
-      { "abbr": "MLB", "x": 45, "y": 58 },
-      { "abbr": "OLB", "x": 64, "y": 58, "label": "R" },
-      { "abbr": "SS",  "x": 35, "y": 63 },
-      { "abbr": "FS",  "x": 50, "y": 78 }
+      { "abbr": "CB",  "x": 6,  "y": 60, "label": "L" },
+      { "abbr": "DE",  "x": 33, "y": 60, "label": "L" },
+      { "abbr": "DT",  "x": 43, "y": 60 },
+      { "abbr": "DT",  "x": 57, "y": 60 },
+      { "abbr": "DE",  "x": 67, "y": 60, "label": "R" },
+      { "abbr": "CB",  "x": 88, "y": 60, "label": "R" },
+      { "abbr": "OLB", "x": 24, "y": 70, "label": "L" },
+      { "abbr": "MLB", "x": 47, "y": 70 },
+      { "abbr": "OLB", "x": 71, "y": 70, "label": "R" },
+      { "abbr": "SS",  "x": 34, "y": 70 },
+      { "abbr": "FS",  "x": 52, "y": 95 }
     ]
   },
   {
@@ -274,17 +274,17 @@
       "LBs stacking the line = expect a QB sneak or dive as the counter"
     ],
     "positions": [
-      { "abbr": "CB",  "x": 10, "y": 50, "label": "L" },
-      { "abbr": "DE",  "x": 35, "y": 50, "label": "L" },
-      { "abbr": "DT",  "x": 42, "y": 50, "label": "L" },
-      { "abbr": "NT",  "x": 48, "y": 50 },
-      { "abbr": "DT",  "x": 54, "y": 50, "label": "R" },
-      { "abbr": "DE",  "x": 61, "y": 50, "label": "R" },
-      { "abbr": "CB",  "x": 83, "y": 50, "label": "R" },
-      { "abbr": "OLB", "x": 32, "y": 60, "label": "L" },
-      { "abbr": "MLB", "x": 48, "y": 60 },
-      { "abbr": "OLB", "x": 64, "y": 60, "label": "R" },
-      { "abbr": "FS",  "x": 48, "y": 72 }
+      { "abbr": "CB",  "x": 5,  "y": 60, "label": "L" },
+      { "abbr": "DE",  "x": 29, "y": 60, "label": "L" },
+      { "abbr": "DT",  "x": 39, "y": 60, "label": "L" },
+      { "abbr": "NT",  "x": 50, "y": 60 },
+      { "abbr": "DT",  "x": 61, "y": 60, "label": "R" },
+      { "abbr": "DE",  "x": 71, "y": 60, "label": "R" },
+      { "abbr": "CB",  "x": 88, "y": 60, "label": "R" },
+      { "abbr": "OLB", "x": 22, "y": 72, "label": "L" },
+      { "abbr": "MLB", "x": 50, "y": 72 },
+      { "abbr": "OLB", "x": 77, "y": 72, "label": "R" },
+      { "abbr": "FS",  "x": 50, "y": 87 }
     ]
   }
 ]

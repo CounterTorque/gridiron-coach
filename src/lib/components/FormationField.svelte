@@ -10,7 +10,8 @@
   let hoveredIdx = null;
 
   const FIELD_W = 100;
-  const FIELD_H = 100;
+  const FIELD_H = 110;
+  const LOS_Y = 60; // line of scrimmage y-coordinate
 
   const OFF_COLOR = '#1a6e3c';
   const DEF_COLOR = '#1a3a6e';
@@ -40,33 +41,37 @@
 
 <div class="field-wrap" class:compact>
   <svg
-    viewBox="0 0 100 100"
+    viewBox="0 0 100 110"
     class="field-svg"
     role="img"
     aria-label={formation ? `${formation.name} formation diagram` : 'Football field'}
   >
     <!-- Field background -->
-    <rect width="100" height="100" fill="#1a2a18" />
+    <rect width="100" height="110" fill="#1a2a18" />
 
-    <!-- Yard lines (every 5 yards shown as subtle lines) -->
-    {#each [10,20,30,40,50,60,70,80,90] as yard}
-      <line
-        x1={yard} y1="0" x2={yard} y2="100"
-        stroke="#2a3a28" stroke-width="0.3"
-      />
+    <!-- Sidelines -->
+    <line x1="0" y1="0" x2="0" y2="110" stroke="#3a5a38" stroke-width="0.5" />
+    <line x1="100" y1="0" x2="100" y2="110" stroke="#3a5a38" stroke-width="0.5" />
+
+    <!-- Horizontal yard lines (every ~5 yds of the visible window) -->
+    {#each [10, 20, 30, 40, 50, 70, 80, 90, 100] as yLine}
+      <line x1="0" y1={yLine} x2="100" y2={yLine} stroke="#2a3a28" stroke-width="0.3" />
     {/each}
 
-    <!-- Hash marks -->
-    {#each [10,20,30,40,50,60,70,80,90] as yard}
-      <line x1={yard-0.4} y1="42" x2={yard+0.4} y2="42" stroke="#3a4a38" stroke-width="0.3" />
-      <line x1={yard-0.4} y1="58" x2={yard+0.4} y2="58" stroke="#3a4a38" stroke-width="0.3" />
+    <!-- Hash marks — two columns of vertical ticks, ~35 and ~65 across (NFL hash proportions) -->
+    {#each [10, 20, 30, 40, 50, 70, 80, 90, 100] as yLine}
+      <line x1="36" y1={yLine - 0.7} x2="36" y2={yLine + 0.7} stroke="#3a4a38" stroke-width="0.35" />
+      <line x1="64" y1={yLine - 0.7} x2="64" y2={yLine + 0.7} stroke="#3a4a38" stroke-width="0.35" />
     {/each}
+
+    <!-- Neutral zone band -->
+    <rect x="0" y="58.5" width="100" height="3" fill="rgba(255,220,0,0.04)" />
 
     <!-- Line of scrimmage -->
-    <line x1="0" y1="50" x2="100" y2="50" stroke="#3a5a38" stroke-width="0.2" stroke-dasharray="2,2" />
+    <line x1="0" y1="60" x2="100" y2="60" stroke="#5a8a58" stroke-width="0.5" stroke-dasharray="3,2" />
 
-    <!-- Neutral zone (between offense and defense) -->
-    <rect x="0" y="48.5" width="100" height="3" fill="rgba(255,220,0,0.04)" />
+    <!-- "LOS" label -->
+    <text x="1.5" y="59" font-size="1.8" fill="#4a7a48" font-family="monospace" opacity="0.7">LOS</text>
 
     {#if formation}
       <!-- Player dots -->
@@ -85,11 +90,11 @@
           <circle
             cx={pos.x}
             cy={pos.y}
-            r="3.8"
+            r="3.2"
             fill={dotColor}
             stroke={strokeColor}
-            stroke-width={hoveredIdx === i ? '0.8' : '0.5'}
-            opacity={hoveredIdx === i ? 1 : 0.92}
+            stroke-width={hoveredIdx === i ? '0.9' : '0.5'}
+            opacity={hoveredIdx === i ? 1 : 0.93}
           />
           <text
             x={pos.x}
@@ -97,7 +102,7 @@
             text-anchor="middle"
             dominant-baseline="middle"
             fill={LABEL_COLOR}
-            font-size="2.2"
+            font-size="1.9"
             font-weight="700"
             font-family="monospace"
             pointer-events="none"
@@ -115,8 +120,7 @@
         />
       {/if}
     {:else}
-      <!-- Empty field hint -->
-      <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" fill="#3a5a38" font-size="4" font-family="sans-serif">
+      <text x="50" y="60" text-anchor="middle" dominant-baseline="middle" fill="#3a5a38" font-size="4" font-family="sans-serif">
         Select a formation
       </text>
     {/if}
