@@ -1,0 +1,290 @@
+[
+  {
+    "id": "i_formation",
+    "name": "I-Formation",
+    "side": "offense",
+    "personnel": "21",
+    "personnelLabel": "2 RB, 1 TE, 2 WR",
+    "description": "A power run formation with the QB, FB, and RB aligned vertically behind the center. The fullback leads the way for the running back on most plays.",
+    "strengths": [
+      "Dominant power run game — FB lead blocks create leverage",
+      "Strong short-yardage and goal-line presence",
+      "Play-action passes are highly effective off run-heavy tendencies"
+    ],
+    "weaknesses": [
+      "Limited spread in the passing game — only 2 WRs",
+      "Predictable run tendencies — defenses can load the box",
+      "Slower developing plays against fast, athletic defenses"
+    ],
+    "tells": [
+      "Two backs in the backfield signals run tendency",
+      "TE alignment (inline vs. split) hints at run direction",
+      "FB directly behind QB = power run up the middle"
+    ],
+    "positions": [
+      { "abbr": "WR", "x": 8,  "y": 50, "label": "X" },
+      { "abbr": "LT", "x": 42, "y": 50 },
+      { "abbr": "LG", "x": 45, "y": 50 },
+      { "abbr": "C",  "x": 48, "y": 50 },
+      { "abbr": "RG", "x": 51, "y": 50 },
+      { "abbr": "RT", "x": 54, "y": 50 },
+      { "abbr": "TE", "x": 58, "y": 50 },
+      { "abbr": "WR", "x": 78, "y": 50, "label": "Z" },
+      { "abbr": "QB", "x": 48, "y": 60 },
+      { "abbr": "FB", "x": 48, "y": 67 },
+      { "abbr": "RB", "x": 48, "y": 74 }
+    ]
+  },
+  {
+    "id": "shotgun_trips",
+    "name": "Shotgun Trips",
+    "side": "offense",
+    "personnel": "11",
+    "personnelLabel": "1 RB, 1 TE, 3 WR",
+    "description": "The QB lines up 5 yards behind the center to get a better pre-snap view of the defense. Three receivers bunch to one side (trips) to overload that zone.",
+    "strengths": [
+      "Strong passing formation — QB has extra time to read the defense",
+      "Trips side creates coverage conflicts: one CB can't cover three WRs",
+      "RB is a versatile checkdown or screen option"
+    ],
+    "weaknesses": [
+      "Run game is less powerful — QB is farther from the line",
+      "Fewer blockers available on run plays",
+      "Predictable as a passing formation — defense can drop into coverage"
+    ],
+    "tells": [
+      "Trips to one side often targets the single-covered WR on the opposite side",
+      "RB alignment beside QB signals possible screen or draw",
+      "Shotgun snap = pass tendency in most offenses"
+    ],
+    "positions": [
+      { "abbr": "WR", "x": 12, "y": 50, "label": "X" },
+      { "abbr": "LT", "x": 42, "y": 50 },
+      { "abbr": "LG", "x": 45, "y": 50 },
+      { "abbr": "C",  "x": 48, "y": 50 },
+      { "abbr": "RG", "x": 51, "y": 50 },
+      { "abbr": "RT", "x": 54, "y": 50 },
+      { "abbr": "TE", "x": 64, "y": 50, "label": "Y" },
+      { "abbr": "WR", "x": 72, "y": 50, "label": "Z" },
+      { "abbr": "WR", "x": 80, "y": 50, "label": "Slot" },
+      { "abbr": "RB", "x": 42, "y": 63 },
+      { "abbr": "QB", "x": 48, "y": 63 }
+    ]
+  },
+  {
+    "id": "singleback",
+    "name": "Singleback",
+    "side": "offense",
+    "personnel": "11",
+    "personnelLabel": "1 RB, 1 TE, 3 WR",
+    "description": "One back behind the QB under center, with three receivers spread across the field. Balances run and pass threats equally.",
+    "strengths": [
+      "Balanced — defense cannot commit to stopping only run or only pass",
+      "Three WRs create matchup problems for linebackers in coverage",
+      "RB has space to make one-cut runs with only one level of defense to beat"
+    ],
+    "weaknesses": [
+      "No lead blocker on most runs — RB must hit the hole quickly",
+      "Less power than I-Formation in short yardage",
+      "Coverage advantage is smaller than pure spread formations"
+    ],
+    "tells": [
+      "Single back under center = balanced threat, harder to read pre-snap",
+      "TE inline = run lean; TE split = pass lean",
+      "WR motion before snap can reveal man vs. zone coverage"
+    ],
+    "positions": [
+      { "abbr": "WR", "x": 10, "y": 50, "label": "X" },
+      { "abbr": "LT", "x": 42, "y": 50 },
+      { "abbr": "LG", "x": 45, "y": 50 },
+      { "abbr": "C",  "x": 48, "y": 50 },
+      { "abbr": "RG", "x": 51, "y": 50 },
+      { "abbr": "RT", "x": 54, "y": 50 },
+      { "abbr": "TE", "x": 60, "y": 50, "label": "Y" },
+      { "abbr": "WR", "x": 72, "y": 50, "label": "Z" },
+      { "abbr": "WR", "x": 82, "y": 50, "label": "Slot" },
+      { "abbr": "QB", "x": 48, "y": 57 },
+      { "abbr": "RB", "x": 48, "y": 67 }
+    ]
+  },
+  {
+    "id": "goal_line_off",
+    "name": "Goal Line",
+    "side": "offense",
+    "personnel": "22",
+    "personnelLabel": "2 RB, 2 TE, 1 WR",
+    "description": "Maximum blockers for short-yardage situations. Two tight ends and a fullback overwhelm defenders at the line. Only one WR to maintain a pass threat.",
+    "strengths": [
+      "Maximum run-blocking power — 8 blockers at the line",
+      "FB lead and two TEs create double-team opportunities",
+      "Very effective in 4th-and-1, goal line, and short-yardage"
+    ],
+    "weaknesses": [
+      "Almost no passing threat — defense knows what's coming",
+      "One WR gives the QB no options if the run is stuffed",
+      "Slow to develop — needs time to create leverage at the line"
+    ],
+    "tells": [
+      "This formation nearly always means a run — defenses react accordingly",
+      "FB behind QB = power dive up the middle",
+      "TE alignment side hints at the direction of the play"
+    ],
+    "positions": [
+      { "abbr": "WR", "x": 10, "y": 50, "label": "X" },
+      { "abbr": "LT", "x": 40, "y": 50 },
+      { "abbr": "LG", "x": 44, "y": 50 },
+      { "abbr": "C",  "x": 48, "y": 50 },
+      { "abbr": "RG", "x": 52, "y": 50 },
+      { "abbr": "RT", "x": 56, "y": 50 },
+      { "abbr": "TE", "x": 60, "y": 50, "label": "Y1" },
+      { "abbr": "TE", "x": 65, "y": 50, "label": "Y2" },
+      { "abbr": "QB", "x": 48, "y": 58 },
+      { "abbr": "FB", "x": 48, "y": 65 },
+      { "abbr": "RB", "x": 48, "y": 72 }
+    ]
+  },
+  {
+    "id": "four_three",
+    "name": "4-3 Base",
+    "side": "defense",
+    "personnel": "43",
+    "personnelLabel": "4 DL, 3 LB, 2 CB, 2 S",
+    "description": "Four defensive linemen and three linebackers. The standard balanced defensive formation for most of football history.",
+    "strengths": [
+      "Balanced against both run and pass",
+      "Four DL creates consistent pressure without extra blitzers",
+      "Three LBs provide flexibility — one can spy the QB, one can blitz, one can drop"
+    ],
+    "weaknesses": [
+      "Vulnerable to spread formations with 3+ WRs — LBs can't cover WRs in space",
+      "A single dominant offensive lineman can neutralize a DL spot",
+      "Predictable when no pre-snap movement"
+    ],
+    "tells": [
+      "Both safeties deep = likely Cover 2 or Cover 4",
+      "SS near the line = blitz or run-stop emphasis",
+      "MLB cheating toward the strong side = stack against the TE"
+    ],
+    "positions": [
+      { "abbr": "CB",  "x": 10, "y": 50, "label": "L" },
+      { "abbr": "DE",  "x": 38, "y": 50, "label": "L" },
+      { "abbr": "DT",  "x": 44, "y": 50 },
+      { "abbr": "DT",  "x": 52, "y": 50 },
+      { "abbr": "DE",  "x": 58, "y": 50, "label": "R" },
+      { "abbr": "CB",  "x": 85, "y": 50, "label": "R" },
+      { "abbr": "OLB", "x": 34, "y": 60, "label": "L" },
+      { "abbr": "MLB", "x": 48, "y": 60 },
+      { "abbr": "OLB", "x": 62, "y": 60, "label": "R" },
+      { "abbr": "SS",  "x": 30, "y": 70 },
+      { "abbr": "FS",  "x": 65, "y": 75 }
+    ]
+  },
+  {
+    "id": "nickel",
+    "name": "Nickel",
+    "side": "defense",
+    "personnel": "42",
+    "personnelLabel": "4 DL, 2 LB, 3 CB, 2 S",
+    "description": "A fifth defensive back (nickelback) replaces a linebacker. Used when the offense puts 3+ WRs on the field to counter spread formations.",
+    "strengths": [
+      "Three CBs handle wide receiver-heavy formations more effectively",
+      "Faster players in coverage reduce big passing plays",
+      "Nickel blitz from the slot is a difficult protection assignment"
+    ],
+    "weaknesses": [
+      "Smaller linebackers make the box more vulnerable to inside runs",
+      "If offense runs, the extra DB often has trouble making tackles in the box",
+      "Gaps in zone coverage if DBs overcommit to certain routes"
+    ],
+    "tells": [
+      "Three CBs on the field signals the defense expects a pass",
+      "Nickelback in the slot = slot WR matchup, or slot blitz coming",
+      "Only two LBs = the offense can exploit run gaps with quick hitting plays"
+    ],
+    "positions": [
+      { "abbr": "CB",  "x": 8,  "y": 50, "label": "L" },
+      { "abbr": "DE",  "x": 38, "y": 50, "label": "L" },
+      { "abbr": "DT",  "x": 44, "y": 50 },
+      { "abbr": "DT",  "x": 52, "y": 50 },
+      { "abbr": "DE",  "x": 58, "y": 50, "label": "R" },
+      { "abbr": "CB",  "x": 82, "y": 50, "label": "R" },
+      { "abbr": "OLB", "x": 34, "y": 60, "label": "L" },
+      { "abbr": "OLB", "x": 62, "y": 60, "label": "R" },
+      { "abbr": "NB",  "x": 68, "y": 56 },
+      { "abbr": "SS",  "x": 28, "y": 72 },
+      { "abbr": "FS",  "x": 60, "y": 77 }
+    ]
+  },
+  {
+    "id": "stacked_box",
+    "name": "46 / Stacked Box",
+    "side": "defense",
+    "personnel": "43",
+    "personnelLabel": "4 DL, 3 LB, 2 CB, 2 S — SS near line",
+    "description": "Both safeties creep toward the line of scrimmage. Eight defenders are in the 'box' (close to the line), making it extremely difficult to run the ball.",
+    "strengths": [
+      "Maximum run-stopping — eight bodies near the line outnumber any blocking scheme",
+      "SS near line disrupts TE blocking assignments",
+      "Creates confusion for offensive line identification"
+    ],
+    "weaknesses": [
+      "Single high safety coverage is vulnerable to deep passes",
+      "One-on-one coverage on outside WRs with no safety help over the top",
+      "A pass thrown quickly can beat a blitz before rushers arrive"
+    ],
+    "tells": [
+      "SS near the line = they expect a run — audible to a quick pass",
+      "Eight in the box often means man coverage outside — go routes are on",
+      "Blitz is likely — quick slants, screens, and hot routes are counters"
+    ],
+    "positions": [
+      { "abbr": "CB",  "x": 8,  "y": 50, "label": "L" },
+      { "abbr": "DE",  "x": 38, "y": 50, "label": "L" },
+      { "abbr": "DT",  "x": 44, "y": 50 },
+      { "abbr": "DT",  "x": 52, "y": 50 },
+      { "abbr": "DE",  "x": 58, "y": 50, "label": "R" },
+      { "abbr": "CB",  "x": 85, "y": 50, "label": "R" },
+      { "abbr": "OLB", "x": 30, "y": 58, "label": "L" },
+      { "abbr": "MLB", "x": 45, "y": 58 },
+      { "abbr": "OLB", "x": 64, "y": 58, "label": "R" },
+      { "abbr": "SS",  "x": 35, "y": 63 },
+      { "abbr": "FS",  "x": 50, "y": 78 }
+    ]
+  },
+  {
+    "id": "goal_line_def",
+    "name": "Goal Line Defense",
+    "side": "defense",
+    "personnel": "53",
+    "personnelLabel": "5 DL, 3 LB, 2 CB, 1 S",
+    "description": "Maximum defensive linemen to stop short-yardage runs. Five down linemen clog every gap at the line of scrimmage.",
+    "strengths": [
+      "Five DL make it nearly impossible to run through gaps",
+      "Extra bodies at the line win leverage battles",
+      "Effective in 4th-and-1 and red zone goal-to-go situations"
+    ],
+    "weaknesses": [
+      "Almost no pass coverage depth — a quick fade to the corner is a TD",
+      "One safety limits over-the-top help",
+      "Susceptible to rub routes and pick plays that free receivers"
+    ],
+    "tells": [
+      "Five DL on the field = stop-the-run only",
+      "Only one safety = go routes and back-shoulder fades are viable",
+      "LBs stacking the line = expect a QB sneak or dive as the counter"
+    ],
+    "positions": [
+      { "abbr": "CB",  "x": 10, "y": 50, "label": "L" },
+      { "abbr": "DE",  "x": 35, "y": 50, "label": "L" },
+      { "abbr": "DT",  "x": 42, "y": 50, "label": "L" },
+      { "abbr": "NT",  "x": 48, "y": 50 },
+      { "abbr": "DT",  "x": 54, "y": 50, "label": "R" },
+      { "abbr": "DE",  "x": 61, "y": 50, "label": "R" },
+      { "abbr": "CB",  "x": 83, "y": 50, "label": "R" },
+      { "abbr": "OLB", "x": 32, "y": 60, "label": "L" },
+      { "abbr": "MLB", "x": 48, "y": 60 },
+      { "abbr": "OLB", "x": 64, "y": 60, "label": "R" },
+      { "abbr": "FS",  "x": 48, "y": 72 }
+    ]
+  }
+]

@@ -1,0 +1,207 @@
+[
+  {
+    "term": "A-Gap",
+    "definition": "The gap between the center and either guard. The most direct path to the QB on a blitz, and a key run lane on inside runs.",
+    "related": ["B-Gap", "Gap", "Nose Tackle"]
+  },
+  {
+    "term": "B-Gap",
+    "definition": "The gap between the guard and tackle. A common target for inside linebackers blitzing and for off-tackle run plays.",
+    "related": ["A-Gap", "C-Gap", "Gap"]
+  },
+  {
+    "term": "Backfield",
+    "definition": "The area behind the offensive line where the QB, RB, and FB line up. Alignment of backfield players signals run or pass tendencies.",
+    "related": ["Shotgun", "I-Formation", "QB", "RB"]
+  },
+  {
+    "term": "Blitz",
+    "definition": "When extra defenders (beyond the standard four rushers) are sent to attack the QB. High-risk, high-reward: if blocked well, it leaves the defense short-handed in coverage.",
+    "related": ["Coverage", "Hot Route", "Protection"]
+  },
+  {
+    "term": "Box",
+    "definition": "The area near the line of scrimmage, roughly between the two tackles and a few yards deep. The number of defenders 'in the box' determines run defense strength. Eight in the box = heavy run defense.",
+    "related": ["Stacked Box", "Strong Safety", "Numbers Advantage"]
+  },
+  {
+    "term": "C-Gap",
+    "definition": "The gap between the offensive tackle and tight end. Outside run plays target this gap.",
+    "related": ["B-Gap", "Edge", "Tight End"]
+  },
+  {
+    "term": "Checkdown",
+    "definition": "The QB's last-resort option, usually a short pass to a RB or TE in the flat, when primary receivers are covered. Keeps the offense moving but limits big plays.",
+    "related": ["Flat", "RB", "Route Tree"]
+  },
+  {
+    "term": "Cover 1",
+    "definition": "Man coverage on all receivers, with one free safety roaming deep. Requires your CBs to be able to cover their receivers alone with no safety help.",
+    "related": ["Cover 2", "Man Coverage", "Free Safety"]
+  },
+  {
+    "term": "Cover 2",
+    "definition": "Two safeties split the deep field in half. CBs play the flats. Creates good deep protection but leaves the middle of the field (underneath seams) vulnerable.",
+    "related": ["Cover 1", "Cover 3", "Safeties", "Flat"]
+  },
+  {
+    "term": "Cover 3",
+    "definition": "Three defenders split the deep field in thirds (usually two CBs and the free safety). Four defenders cover underneath zones. Good balance but can be beaten by crossing routes.",
+    "related": ["Cover 2", "Zone Coverage", "Corner Route"]
+  },
+  {
+    "term": "Coverage",
+    "definition": "The defensive scheme used to defend the passing game. Comes in two types: man (a defender assigned to a specific receiver) and zone (defenders responsible for areas of the field).",
+    "related": ["Man Coverage", "Zone Coverage", "Cover 1", "Cover 2"]
+  },
+  {
+    "term": "Decision Score",
+    "definition": "In this game: how well-reasoned your call was, independent of the outcome. A great call that results in a loss still scores well. A lucky call that happened to work scores poorly.",
+    "related": []
+  },
+  {
+    "term": "Down",
+    "definition": "Each play is called a 'down.' The offense gets four downs to advance 10 yards for a first down. Failing to do so turns the ball over to the opposing team.",
+    "related": ["First Down", "Down and Distance", "Punting"]
+  },
+  {
+    "term": "Down and Distance",
+    "definition": "The current down (1st through 4th) and yards needed for a first down. '3rd and 8' means it's the third play of the series and 8 yards are needed. This context heavily influences play-calling.",
+    "related": ["Down", "First Down", "Situation"]
+  },
+  {
+    "term": "Edge",
+    "definition": "The outside of the offensive line formation — where the tackle lines up. 'Setting the edge' means preventing a runner from turning the corner; 'getting off the edge' means a pass rusher beating the tackle.",
+    "related": ["Defensive End", "Outside Linebacker", "C-Gap"]
+  },
+  {
+    "term": "First Down",
+    "definition": "Successfully gaining 10 yards in four downs resets the count to '1st and 10.' Every drive is a series of attempts to keep achieving first downs.",
+    "related": ["Down", "Down and Distance"]
+  },
+  {
+    "term": "Flat",
+    "definition": "The area just outside the offensive tackles, near or behind the line of scrimmage. Running backs and tight ends often run short routes into the flat as safety valves.",
+    "related": ["Checkdown", "Cover 2", "Screen"]
+  },
+  {
+    "term": "Formation",
+    "definition": "How players are aligned before the snap. Formation signals intent and capability — a defense reads the offensive formation to predict what plays are possible.",
+    "related": ["Personnel", "Alignment", "Tells"]
+  },
+  {
+    "term": "Gap",
+    "definition": "The space between offensive linemen. Named A through C from the center outward. Defensive linemen try to penetrate gaps; blockers try to seal them.",
+    "related": ["A-Gap", "B-Gap", "C-Gap"]
+  },
+  {
+    "term": "Hot Route",
+    "definition": "A pre-planned quick pass to a receiver who runs a short route against a blitz. The QB must get rid of the ball before the extra rushers arrive.",
+    "related": ["Blitz", "Screen", "Protection"]
+  },
+  {
+    "term": "Line of Scrimmage",
+    "definition": "An imaginary line where the ball is placed before each play. Offense lines up on one side, defense on the other. The offense must gain ground past this line.",
+    "related": ["Down", "Snap", "Box"]
+  },
+  {
+    "term": "Man Coverage",
+    "definition": "Each defensive back is assigned a specific offensive player and follows them wherever they go. Requires individual talent to win one-on-one. Can be beaten by picks and rub routes.",
+    "related": ["Zone Coverage", "Cover 1", "Cornerback"]
+  },
+  {
+    "term": "Mismatch",
+    "definition": "When a defender is matched against a player they can't effectively cover or block — e.g., a linebacker trying to cover a fast wide receiver. Good offenses create mismatches with formation and motion.",
+    "related": ["Personnel", "Nickelback", "TE"]
+  },
+  {
+    "term": "Numbers Advantage",
+    "definition": "Having more players on one side of the formation than the defense can account for. A key concept: trips to one side forces the defense to either overshift (leaving the other side open) or give up a favorable matchup.",
+    "related": ["Box", "Overload", "Trips"]
+  },
+  {
+    "term": "Penetration",
+    "definition": "A defensive lineman crossing the line of scrimmage into the backfield before the runner can get to the hole. Penetration 'blows up' a run play for a loss.",
+    "related": ["Tackle for Loss", "DT", "Gap"]
+  },
+  {
+    "term": "Personnel",
+    "definition": "The combination of player types on the field. Described as two digits: first is the number of RBs, second is the number of TEs. '11 personnel' = 1 RB, 1 TE (and therefore 3 WRs). '21' = 2 RB, 1 TE.",
+    "related": ["Formation", "Nickel", "11 Personnel"]
+  },
+  {
+    "term": "Pocket",
+    "definition": "The protected area behind the offensive line where the QB stands to pass. The line forms a 'U' shape around the QB. When it collapses, the QB must scramble.",
+    "related": ["Protection", "Sack", "Scramble"]
+  },
+  {
+    "term": "Protection",
+    "definition": "The blocking scheme that keeps the QB safe from pass rushers. Different protection schemes (7-man max protect, 5-man base) trade blocking help for route options.",
+    "related": ["Blitz", "Pocket", "Sack"]
+  },
+  {
+    "term": "Redzone",
+    "definition": "The final 20 yards before the end zone. Field space is compressed, so deep routes have less room and defenses can crowd the line. Changes the value of most play types.",
+    "related": ["Down and Distance", "Situation", "Goal Line"]
+  },
+  {
+    "term": "Route Tree",
+    "definition": "The standardized set of receiver routes, numbered 1-9. Each route is run at a specific depth and angle. Teams build pass plays by combining multiple routes that attack different zones.",
+    "related": ["Flat", "Slant", "Post", "Go Route"]
+  },
+  {
+    "term": "Sack",
+    "definition": "The QB is tackled behind the line of scrimmage before they can throw. A significant loss of yards. Sacks result from failed protection or great pass rushing.",
+    "related": ["Blitz", "Protection", "Pocket"]
+  },
+  {
+    "term": "Screen",
+    "definition": "A short pass to a receiver (often a RB) who has blockers in front of them. A counter to heavy blitzing — defenders rush past the screen and are now running away from the ball.",
+    "related": ["Blitz", "Hot Route", "Flat"]
+  },
+  {
+    "term": "Situation",
+    "definition": "The combination of down, distance, field position, score, and clock that defines what each team needs to do on a given play. The most important context for any play call.",
+    "related": ["Down and Distance", "Redzone", "Clock"]
+  },
+  {
+    "term": "Slant",
+    "definition": "A short, quick route where the receiver runs a few steps upfield then cuts sharply across the middle. Fast to develop and hard for zone defenses to cover. Beaten by pattern-match coverages.",
+    "related": ["Route Tree", "Flat", "Crossing Route"]
+  },
+  {
+    "term": "Snap",
+    "definition": "The action that starts each play: the center throws or hands the ball between their legs to the QB. From shotgun, it's a long snap; under center, it's a hand-to-hand exchange.",
+    "related": ["Center", "QB", "Shotgun"]
+  },
+  {
+    "term": "Stacked Box",
+    "definition": "When eight or more defenders are positioned near the line of scrimmage. This many defenders make running the ball almost impossible — but it leaves the secondary vulnerable to passes.",
+    "related": ["Box", "Numbers Advantage", "Blitz"]
+  },
+  {
+    "term": "Strong Side",
+    "definition": "The side of the offensive line with the tight end, when one is present. Defenses often shift toward the strong side because extra blockers concentrate there.",
+    "related": ["Tight End", "Weak Side", "Strong Safety"]
+  },
+  {
+    "term": "Tackle for Loss",
+    "definition": "A run play that is stopped behind the line of scrimmage, resulting in a loss of yards. TFLs destroy drives and put the offense in long-down-and-distance situations.",
+    "related": ["Penetration", "DT", "Stacked Box"]
+  },
+  {
+    "term": "Tells",
+    "definition": "Pre-snap clues from a formation that hint at the likely play. Great defenders and coaches read tells to anticipate what's coming. Great offenses disguise tells with motion and multiple looks.",
+    "related": ["Formation", "Audible", "Pre-Snap Read"]
+  },
+  {
+    "term": "Trips",
+    "definition": "Three receivers aligned to the same side of the formation. Forces the defense to choose: match the trips (bringing extra defenders that side) or leave one WR isolated one-on-one.",
+    "related": ["Numbers Advantage", "WR", "Shotgun Trips"]
+  },
+  {
+    "term": "Zone Coverage",
+    "definition": "Defenders are responsible for areas (zones) of the field rather than specific players. Creates a wall of coverage but can be beaten by getting two receivers into the same zone.",
+    "related": ["Man Coverage", "Cover 2", "Cover 3"]
+  }
+]

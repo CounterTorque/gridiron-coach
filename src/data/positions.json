@@ -1,0 +1,212 @@
+[
+  {
+    "abbr": "QB",
+    "name": "Quarterback",
+    "side": "offense",
+    "responsibilities": [
+      "Receives snap from center and initiates every offensive play",
+      "Reads the defense pre-snap to identify coverages and blitzes",
+      "Hands off to the running back, throws to a receiver, or scrambles",
+      "Calls audibles at the line to change the play based on defensive alignment"
+    ],
+    "notes": "The most important position on the field. A QB who can identify pre-snap looks — like a safety cheating toward the box — gives the offense a huge advantage."
+  },
+  {
+    "abbr": "RB",
+    "name": "Running Back",
+    "side": "offense",
+    "responsibilities": [
+      "Carries the ball on run plays",
+      "Blocks for the QB on passing plays",
+      "Runs routes as a checkdown option out of the backfield",
+      "Picks up blitzing defenders in pass protection"
+    ],
+    "notes": "In the I-Formation, the RB lines up behind the fullback and QB. In Shotgun, they line up beside the QB. Their alignment signals run vs. pass tendencies."
+  },
+  {
+    "abbr": "FB",
+    "name": "Fullback",
+    "side": "offense",
+    "responsibilities": [
+      "Lead blocker on power run plays — clears a path for the RB",
+      "Short-yardage runner on goal line and 4th-and-1 situations",
+      "Occasionally runs routes as a receiving option"
+    ],
+    "notes": "Largely phased out in modern football but critical in power-run formations like the I-Formation and Goal Line. Defenses must account for the FB or give up easy short-yardage gains."
+  },
+  {
+    "abbr": "WR",
+    "name": "Wide Receiver",
+    "side": "offense",
+    "responsibilities": [
+      "Runs precise routes to create separation from defensive backs",
+      "Catches passes from the QB",
+      "Blocks on run plays when the ball goes to their side"
+    ],
+    "notes": "WR alignments tell you a lot. A 'trips' set (three WRs to one side) forces the defense to choose: match up or leave one side vulnerable."
+  },
+  {
+    "abbr": "TE",
+    "name": "Tight End",
+    "side": "offense",
+    "responsibilities": [
+      "Blocks defensive ends and linebackers on run plays",
+      "Runs routes as a receiving option in the passing game",
+      "Can be used as an extra blocker (inline TE) or split wide like a WR"
+    ],
+    "notes": "The TE is a matchup problem: too big for cornerbacks, too fast for linebackers. Their alignment — inline vs. flexed out — telegraphs whether a play is run-heavy or pass-heavy."
+  },
+  {
+    "abbr": "LT",
+    "name": "Left Tackle",
+    "side": "offense",
+    "responsibilities": [
+      "Protects the QB's blind side (for a right-handed QB)",
+      "Opens running lanes on plays to the left",
+      "Often assigned to block the opposing team's best pass rusher"
+    ],
+    "notes": "The most valuable offensive lineman. A weak left tackle will be exposed by speed rushers off the edge — a key exploitation in blitz-heavy schemes."
+  },
+  {
+    "abbr": "LG",
+    "name": "Left Guard",
+    "side": "offense",
+    "responsibilities": [
+      "Blocks the interior defensive linemen and inside linebackers",
+      "Pulls on run plays to lead block around the edge"
+    ],
+    "notes": "Guards and centers form the interior of the offensive line — if they lose to nose tackles or interior DTs, run plays get stuffed at the line of scrimmage."
+  },
+  {
+    "abbr": "C",
+    "name": "Center",
+    "side": "offense",
+    "responsibilities": [
+      "Snaps the ball to the QB to begin every play",
+      "Identifies defensive fronts and communicates blocking assignments to the line",
+      "Blocks the nose tackle on run plays"
+    ],
+    "notes": "The center is the offensive line's quarterback. They make the blocking calls that allow the whole line to work as a unit."
+  },
+  {
+    "abbr": "RG",
+    "name": "Right Guard",
+    "side": "offense",
+    "responsibilities": [
+      "Blocks interior defensive linemen",
+      "Pulls on run plays to lead block"
+    ],
+    "notes": "See Left Guard. The RG mirrors the LG across the center."
+  },
+  {
+    "abbr": "RT",
+    "name": "Right Tackle",
+    "side": "offense",
+    "responsibilities": [
+      "Protects the QB's front side",
+      "Opens running lanes to the right",
+      "Blocks edge rushers off the right side"
+    ],
+    "notes": "Generally faces the defense's second-best pass rusher. Run plays to the right depend heavily on the RT winning at the point of attack."
+  },
+  {
+    "abbr": "DE",
+    "name": "Defensive End",
+    "side": "defense",
+    "responsibilities": [
+      "Rushes the passer off the edge",
+      "Sets the edge on run plays — prevents the runner from getting outside",
+      "Maintains gap assignment on run defense"
+    ],
+    "notes": "In a 4-3, the two DEs are primary pass rushers. In a 3-4, the ends are heavier run-stuffers; pass rushing falls to the outside linebackers."
+  },
+  {
+    "abbr": "DT",
+    "name": "Defensive Tackle",
+    "side": "defense",
+    "responsibilities": [
+      "Occupies offensive linemen to free up linebackers",
+      "Penetrates gaps to stop runs in the backfield (tackles for loss)",
+      "Interior pass rush — collapse the pocket up the middle"
+    ],
+    "notes": "A dominant DT (like a '3-technique' who aligns in the gap outside the guard) can wreck run-heavy offenses by collapsing gaps before blockers can reach linebackers."
+  },
+  {
+    "abbr": "NT",
+    "name": "Nose Tackle",
+    "side": "defense",
+    "responsibilities": [
+      "Lines up over the center in 3-4 and goal-line fronts",
+      "Occupies two blockers to free linebackers",
+      "Plugs the A-gaps (gaps on either side of the center)"
+    ],
+    "notes": "The NT is a 'space-eater.' They don't make many flashy plays — their job is to draw double-teams so linebackers can flow freely to the ball."
+  },
+  {
+    "abbr": "MLB",
+    "name": "Middle Linebacker",
+    "side": "defense",
+    "responsibilities": [
+      "Reads the offensive backfield to diagnose run or pass pre-snap",
+      "Fills run gaps when the DL creates openings",
+      "Covers the middle of the field on pass plays (zones) or follows the RB (man)"
+    ],
+    "notes": "The 'quarterback of the defense.' The MLB makes defensive adjustments at the line of scrimmage in the same way the QB calls audibles."
+  },
+  {
+    "abbr": "OLB",
+    "name": "Outside Linebacker",
+    "side": "defense",
+    "responsibilities": [
+      "Sets the edge against outside runs",
+      "In 3-4 defenses: rushes the passer off the edge",
+      "Covers tight ends or running backs in pass coverage"
+    ],
+    "notes": "In a 3-4, the OLBs are often the primary pass rushers (effectively acting as edge rushers). In a 4-3, they play more as run-stoppers and coverage LBs."
+  },
+  {
+    "abbr": "CB",
+    "name": "Cornerback",
+    "side": "defense",
+    "responsibilities": [
+      "Covers wide receivers in man-to-man or zone coverage",
+      "Jams WRs at the line of scrimmage to disrupt route timing",
+      "Sets the edge as the last line of defense on outside runs"
+    ],
+    "notes": "CBs must have short memories — getting beaten for a deep ball is part of the job. Elite corners eliminate the opponent's best WR from the game."
+  },
+  {
+    "abbr": "SS",
+    "name": "Strong Safety",
+    "side": "defense",
+    "responsibilities": [
+      "Lines up near the line of scrimmage on the tight end side",
+      "Supports run defense — acts as an extra linebacker near the box",
+      "Covers tight ends or short crossing routes in the middle"
+    ],
+    "notes": "The SS 'in the box' is a tell that the defense is loading up to stop the run. Offenses that see this can audible to a quick pass to exploit single coverage outside."
+  },
+  {
+    "abbr": "FS",
+    "name": "Free Safety",
+    "side": "defense",
+    "responsibilities": [
+      "Lines up deep in the middle of the field",
+      "Reads the QB's eyes and reacts to deep routes",
+      "Provides over-the-top help to cornerbacks",
+      "Last line of defense against big plays"
+    ],
+    "notes": "In Cover 2, both safeties split the deep field. In Cover 1 (man free), the FS roams free while everyone else plays man. The FS alignment tells an experienced QB a lot about coverage."
+  },
+  {
+    "abbr": "NB",
+    "name": "Nickelback",
+    "side": "defense",
+    "responsibilities": [
+      "Fifth defensive back, replaces a linebacker in Nickel packages",
+      "Covers slot receivers, tight ends, and running backs in space",
+      "Occasional blitzer from the slot (nickel blitz)"
+    ],
+    "notes": "The 'nickel' package exists because a standard LB struggles to cover fast slot WRs in space. Offenses that put three or more WRs on the field force defenses to sub in the nickelback."
+  }
+]
