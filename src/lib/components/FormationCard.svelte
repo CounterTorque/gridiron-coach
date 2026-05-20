@@ -29,30 +29,34 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    background: var(--bg);
+    border: none;
+    border-radius: 10px;
     padding: 0.875rem 1rem;
     text-align: left;
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    box-shadow: var(--neu-raised-sm);
+    transition: box-shadow 0.15s;
     font-family: inherit;
     width: 100%;
   }
 
   .card:hover {
-    border-color: var(--border-hover);
-    background: var(--surface-hover);
+    box-shadow: var(--neu-raised);
+  }
+
+  .card.selected {
+    box-shadow: var(--neu-inset-sm);
   }
 
   .card.selected.offense {
-    border-color: var(--off-accent);
-    background: rgba(42,175,96,0.08);
+    outline: 2px solid var(--off-accent);
+    outline-offset: -2px;
   }
 
   .card.selected.defense {
-    border-color: var(--def-accent);
-    background: rgba(42,96,175,0.08);
+    outline: 2px solid var(--def-accent);
+    outline-offset: -2px;
   }
 
   .card-header {

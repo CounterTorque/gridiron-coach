@@ -13,10 +13,10 @@
   const FIELD_H = 110;
   const LOS_Y = 60; // line of scrimmage y-coordinate
 
-  const OFF_COLOR = '#1a6e3c';
-  const DEF_COLOR = '#1a3a6e';
-  const OFF_STROKE = '#2aaf60';
-  const DEF_STROKE = '#2a60af';
+  const OFF_COLOR = '#1a7a3c';
+  const DEF_COLOR = '#0d2347';
+  const OFF_STROKE = '#3dcc7a';
+  const DEF_STROKE = '#4a7abf';
   const LABEL_COLOR = '#ffffff';
 
   function onEnter(idx) { hoveredIdx = idx; }
@@ -47,31 +47,31 @@
     aria-label={formation ? `${formation.name} formation diagram` : 'Football field'}
   >
     <!-- Field background -->
-    <rect width="100" height="110" fill="#1a2a18" />
+    <rect width="100" height="110" fill="#2d7a3a" />
 
     <!-- Sidelines -->
-    <line x1="0" y1="0" x2="0" y2="110" stroke="#3a5a38" stroke-width="0.5" />
-    <line x1="100" y1="0" x2="100" y2="110" stroke="#3a5a38" stroke-width="0.5" />
+    <line x1="0" y1="0" x2="0" y2="110" stroke="rgba(255,255,255,0.75)" stroke-width="0.5" />
+    <line x1="100" y1="0" x2="100" y2="110" stroke="rgba(255,255,255,0.75)" stroke-width="0.5" />
 
     <!-- Horizontal yard lines (every ~5 yds of the visible window) -->
     {#each [10, 20, 30, 40, 50, 70, 80, 90, 100] as yLine}
-      <line x1="0" y1={yLine} x2="100" y2={yLine} stroke="#2a3a28" stroke-width="0.3" />
+      <line x1="0" y1={yLine} x2="100" y2={yLine} stroke="rgba(255,255,255,0.35)" stroke-width="0.3" />
     {/each}
 
     <!-- Hash marks — two columns of vertical ticks, ~35 and ~65 across (NFL hash proportions) -->
     {#each [10, 20, 30, 40, 50, 70, 80, 90, 100] as yLine}
-      <line x1="36" y1={yLine - 0.7} x2="36" y2={yLine + 0.7} stroke="#3a4a38" stroke-width="0.35" />
-      <line x1="64" y1={yLine - 0.7} x2="64" y2={yLine + 0.7} stroke="#3a4a38" stroke-width="0.35" />
+      <line x1="36" y1={yLine - 0.7} x2="36" y2={yLine + 0.7} stroke="rgba(255,255,255,0.45)" stroke-width="0.35" />
+      <line x1="64" y1={yLine - 0.7} x2="64" y2={yLine + 0.7} stroke="rgba(255,255,255,0.45)" stroke-width="0.35" />
     {/each}
 
     <!-- Neutral zone band -->
-    <rect x="0" y="58.5" width="100" height="3" fill="rgba(255,220,0,0.04)" />
+    <rect x="0" y="58.5" width="100" height="3" fill="rgba(255,220,0,0.07)" />
 
     <!-- Line of scrimmage -->
-    <line x1="0" y1="60" x2="100" y2="60" stroke="#5a8a58" stroke-width="0.5" stroke-dasharray="3,2" />
+    <line x1="0" y1="60" x2="100" y2="60" stroke="rgba(255,255,255,0.8)" stroke-width="0.5" stroke-dasharray="3,2" />
 
     <!-- "LOS" label -->
-    <text x="1.5" y="59" font-size="1.8" fill="#4a7a48" font-family="monospace" opacity="0.7">LOS</text>
+    <text x="1.5" y="59" font-size="1.8" fill="rgba(255,255,255,0.6)" font-family="monospace" opacity="0.9">LOS</text>
 
     {#if formation}
       <!-- Player dots -->
@@ -120,7 +120,7 @@
         />
       {/if}
     {:else}
-      <text x="50" y="60" text-anchor="middle" dominant-baseline="middle" fill="#3a5a38" font-size="4" font-family="sans-serif">
+      <text x="50" y="60" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.3)" font-size="4" font-family="sans-serif">
         Select a formation
       </text>
     {/if}
@@ -149,9 +149,10 @@
   .field-svg {
     width: 100%;
     height: auto;
-    border: 1px solid #2a3a28;
-    border-radius: 4px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
     display: block;
+    box-shadow: var(--neu-raised-sm);
   }
 
   .player-dot {
@@ -163,15 +164,16 @@
   }
 
   .player-dot:focus circle {
-    stroke: #e8c53a;
+    stroke: #ffffff;
     stroke-width: 0.8px;
   }
 
   .tells-panel {
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: 4px;
+    background: var(--bg);
+    border: none;
+    border-radius: 6px;
     padding: 0.6rem 0.875rem;
+    box-shadow: var(--neu-raised-sm);
   }
 
   .tells-label {

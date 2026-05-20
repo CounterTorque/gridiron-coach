@@ -92,9 +92,11 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 1.25rem;
-    border-bottom: 1px solid var(--border);
     flex-shrink: 0;
-    background: var(--surface);
+    background: var(--bg);
+    box-shadow: 0 2px 8px var(--shadow-dark), 0 -1px 0 var(--shadow-light);
+    position: relative;
+    z-index: 10;
   }
 
   .topbar-left {
@@ -117,28 +119,28 @@
   }
 
   .nav-btn {
-    background: none;
+    background: var(--bg);
     border: none;
     padding: 0.3rem 0.65rem;
     font-size: 0.8rem;
     font-family: inherit;
     color: var(--text-muted);
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     gap: 0.35rem;
-    transition: background 0.1s, color 0.1s;
+    transition: box-shadow 0.15s, color 0.15s;
   }
 
   .nav-btn:not(:disabled):hover {
-    background: var(--surface-raised);
+    box-shadow: var(--neu-raised-sm);
     color: var(--text-primary);
   }
 
   .nav-btn.active {
-    color: var(--text-primary);
-    background: var(--surface-raised);
+    color: var(--accent);
+    box-shadow: var(--neu-inset-sm);
   }
 
   .nav-btn:disabled {
@@ -158,20 +160,20 @@
   }
 
   .glossary-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 4px;
+    background: var(--bg);
+    border: none;
+    border-radius: 6px;
     padding: 0.3rem 0.75rem;
     font-size: 0.78rem;
     font-family: inherit;
     color: var(--accent);
     cursor: pointer;
-    transition: background 0.1s, border-color 0.1s;
+    box-shadow: var(--neu-raised-sm);
+    transition: box-shadow 0.15s;
   }
 
   .glossary-btn:hover {
-    background: var(--surface-raised);
-    border-color: var(--accent);
+    box-shadow: var(--neu-raised);
   }
 
   .main-content {

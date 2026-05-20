@@ -33,14 +33,14 @@
 
 <style>
   .tooltip {
-    background: #0f1923;
-    border: 1px solid #2a3a4a;
-    border-radius: 4px;
+    background: rgba(13,35,71,0.95);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 5px;
     padding: 6px 8px;
     min-width: 160px;
     max-width: 220px;
     pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.08) inset;
     position: absolute;
     white-space: normal;
     z-index: 50;
@@ -49,14 +49,14 @@
   .tt-name {
     font-size: 11px;
     font-weight: 700;
-    color: #e8c53a;
+    color: #ffffff;
     margin-bottom: 3px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
   }
 
   .tt-resp {
     font-size: 10px;
-    color: #8ba0b0;
+    color: rgba(255,255,255,0.7);
     line-height: 1.4;
   }
 </style>

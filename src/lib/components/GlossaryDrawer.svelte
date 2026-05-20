@@ -84,7 +84,7 @@
   .overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(13,35,71,0.22);
     z-index: 100;
   }
 
@@ -94,8 +94,9 @@
     right: 0;
     width: min(400px, 95%);
     height: 100%;
-    background: var(--surface);
-    border-left: 1px solid var(--border);
+    background: var(--bg);
+    border-left: none;
+    box-shadow: -8px 0 28px rgba(0,0,0,0.14), -1px 0 0 var(--shadow-light);
     z-index: 101;
     display: flex;
     flex-direction: column;
@@ -140,20 +141,21 @@
 
   .search-input {
     width: 100%;
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: 4px;
+    background: var(--bg);
+    border: none;
+    border-radius: 6px;
     padding: 0.5rem 0.75rem;
     color: var(--text-primary);
     font-size: 0.875rem;
     font-family: inherit;
     box-sizing: border-box;
+    box-shadow: var(--neu-inset-sm);
   }
 
   .search-input::placeholder { color: var(--text-muted); }
   .search-input:focus {
     outline: none;
-    border-color: var(--accent);
+    box-shadow: var(--neu-inset);
   }
 
   .term-list {
@@ -170,16 +172,16 @@
     align-items: flex-start;
     gap: 0.2rem;
     width: 100%;
-    background: none;
+    background: var(--bg);
     border: none;
     border-bottom: 1px solid var(--border);
     padding: 0.75rem 1.25rem;
     text-align: left;
     cursor: pointer;
-    transition: background 0.1s;
+    transition: background 0.12s;
   }
 
-  .term-btn:hover { background: var(--surface-raised); }
+  .term-btn:hover { background: var(--surface-hover); }
 
   .term-name {
     font-size: 0.875rem;
@@ -243,18 +245,19 @@
   }
 
   .related-link {
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: 3px;
+    background: var(--bg);
+    border: none;
+    border-radius: 5px;
     color: var(--accent);
     font-size: 0.75rem;
     padding: 0.2rem 0.5rem;
     cursor: pointer;
     font-family: inherit;
-    transition: background 0.1s;
+    box-shadow: var(--neu-raised-sm);
+    transition: box-shadow 0.15s;
   }
 
-  .related-link:hover { background: var(--surface-hover); }
+  .related-link:hover { box-shadow: var(--neu-raised); }
 
   .related-plain {
     font-size: 0.75rem;

@@ -195,7 +195,7 @@
     flex-direction: column;
     gap: 0;
     overflow: hidden;
-    border-right: 1px solid var(--border);
+    box-shadow: 2px 0 8px rgba(0,0,0,0.08), -1px 0 0 var(--shadow-light);
   }
 
   .panel-header {
@@ -254,21 +254,22 @@
   }
 
   .filter-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 3px;
+    background: var(--bg);
+    border: none;
+    border-radius: 5px;
     padding: 0.2rem 0.6rem;
     font-size: 0.72rem;
     font-family: inherit;
     color: var(--text-muted);
     cursor: pointer;
-    transition: background 0.1s, color 0.1s;
+    box-shadow: var(--neu-raised-sm);
+    transition: box-shadow 0.15s, color 0.15s;
   }
 
   .filter-btn.active {
     background: var(--accent);
-    border-color: var(--accent);
-    color: #000;
+    box-shadow: none;
+    color: #ffffff;
     font-weight: 600;
   }
 
@@ -387,7 +388,7 @@
     position: absolute;
     left: 0;
     color: #c0392b;
-    font-weight: 700;
+    font-weight: 900;
   }
 
   /* Positions tab */
@@ -395,18 +396,19 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: 5px;
+    background: var(--bg);
+    border: none;
+    border-radius: 8px;
     padding: 0.6rem 0.75rem;
     cursor: pointer;
     text-align: left;
     font-family: inherit;
     width: 100%;
-    transition: background 0.1s;
+    box-shadow: var(--neu-raised-sm);
+    transition: box-shadow 0.15s;
   }
 
-  .pos-row:hover { background: var(--surface-hover); }
+  .pos-row:hover { box-shadow: var(--neu-raised); }
 
   .pos-abbr-sm {
     width: 2.2rem;
@@ -421,8 +423,8 @@
     flex-shrink: 0;
   }
 
-  .pos-abbr-sm.offense { background: #1a6e3c; border: 1px solid #2aaf60; color: #fff; }
-  .pos-abbr-sm.defense { background: #1a3a6e; border: 1px solid #2a60af; color: #fff; }
+  .pos-abbr-sm.offense { background: #1a7a3c; border: 2px solid #3dcc7a; color: #fff; }
+  .pos-abbr-sm.defense { background: #0d2347; border: 2px solid #4a7abf; color: #fff; }
 
   .pos-row-text {
     display: flex;
@@ -485,8 +487,8 @@
     flex-shrink: 0;
   }
 
-  .pos-abbr.offense { background: #1a6e3c; border: 2px solid #2aaf60; color: #fff; }
-  .pos-abbr.defense { background: #1a3a6e; border: 2px solid #2a60af; color: #fff; }
+  .pos-abbr.offense { background: #1a7a3c; border: 2px solid #3dcc7a; color: #fff; }
+  .pos-abbr.defense { background: #0d2347; border: 2px solid #4a7abf; color: #fff; }
 
   .pos-detail-header h3 {
     margin: 0 0 0.15rem;
@@ -541,19 +543,20 @@
   }
 
   .glossary-link {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 4px;
+    background: var(--bg);
+    border: none;
+    border-radius: 6px;
     padding: 0.4rem 0.75rem;
     color: var(--accent);
     font-size: 0.75rem;
     cursor: pointer;
     font-family: inherit;
     align-self: flex-start;
-    transition: background 0.1s;
+    box-shadow: var(--neu-raised-sm);
+    transition: box-shadow 0.15s;
   }
 
-  .glossary-link:hover { background: var(--surface-raised); }
+  .glossary-link:hover { box-shadow: var(--neu-raised); }
 
   .compact-formation {
     margin-bottom: 0.75rem;
