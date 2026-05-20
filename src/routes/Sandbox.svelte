@@ -185,16 +185,9 @@
     grid-template-columns: 340px 1fr;
     grid-template-rows: 1fr;
     gap: 1.5rem;
-    height: calc(100dvh - 56px);
+    height: 100%;
     overflow: hidden;
-  }
-
-  @media (max-width: 768px) {
-    .sandbox {
-      grid-template-columns: 1fr;
-      height: auto;
-      overflow: visible;
-    }
+    padding: 0 1.25rem;
   }
 
   .sandbox-left {

@@ -1,8 +1,28 @@
 <script>
+  import { onMount } from 'svelte';
   import Sandbox from './routes/Sandbox.svelte';
   import Coach from './routes/Coach.svelte';
   import GlossaryDrawer from './lib/components/GlossaryDrawer.svelte';
   import { glossaryOpen, activeRoute } from './lib/stores/ui.js';
+
+  const STAGE_W = 1152;
+  const STAGE_H = 864;
+
+  let stageEl;
+  let scale = 1;
+
+  function updateScale() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    scale = Math.min(vw / STAGE_W, vh / STAGE_H);
+  }
+
+  onMount(() => {
+    updateScale();
+    const ro = new ResizeObserver(updateScale);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  });
 
   function toggleGlossary() {
     glossaryOpen.update(v => !v);
@@ -15,7 +35,11 @@
   ];
 </script>
 
-<div class="app">
+<div
+  class="stage"
+  bind:this={stageEl}
+  style="transform: scale({scale}); width: {STAGE_W}px; height: {STAGE_H}px;"
+>
   <header class="topbar">
     <div class="topbar-left">
       <span class="logo">GRIDIRON COACH</span>
@@ -51,12 +75,15 @@
 </div>
 
 <style>
-  .app {
-    min-height: 100dvh;
+  .stage {
+    position: relative;
     display: flex;
     flex-direction: column;
     background: var(--bg);
     color: var(--text-primary);
+    overflow: hidden;
+    transform-origin: center center;
+    flex-shrink: 0;
   }
 
   .topbar {
@@ -152,6 +179,6 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: 0 1.25rem;
+    min-height: 0;
   }
 </style>

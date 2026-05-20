@@ -112,7 +112,6 @@
     : `OPP ${100 - situation.fieldPosition}`;
 </script>
 
-<div class="coach-page">
 <div class="coach-wrap">
 
   <!-- Situation strip -->
@@ -272,40 +271,21 @@
   {/if}
 
 </div>
-</div>
 
 <style>
-  /*
-   * Outer shell: fills main-content, centers the scaled card.
-   * No padding here — the em-based card handles its own sizing.
-   */
-  .coach-page {
+  .coach-wrap {
     flex: 1;
     min-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto;
-  }
-
-  /*
-   * The card.  font-size is driven by viewport height so every
-   * em-based child dimension scales proportionally.
-   *
-   *   clamp(min, ideal, max)
-   *   ideal = (dvh − topbar) / 32
-   *   At 960 dvh: (960−56)/32 = 28.25 → capped at 28px  (~1.75× native)
-   *   At 768 dvh: (768−56)/32 = 22.25px                  (~1.4× native)
-   *   At 500 dvh: (500−56)/32 = 13.9 → floored at 13px
-   *
-   * max-width stays in px; width in % so it never bleeds on narrow viewports.
-   */
-  .coach-wrap {
-    font-size: clamp(13px, calc((100dvh - 56px) / 32), 28px);
     display: flex;
     flex-direction: column;
     width: 100%;
     max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    overflow-y: auto;
+    /* Fixed em base matching original design at 864px stage height:
+       (864 - 56) / 32 ≈ 25px */
+    font-size: 25px;
   }
 
   /* ── Situation strip ─────────────────────────────── */
