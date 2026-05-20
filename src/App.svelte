@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import Sandbox from './routes/Sandbox.svelte';
   import Coach from './routes/Coach.svelte';
+  import Tutorial from './routes/Tutorial.svelte';
+  import Drill from './routes/Drill.svelte';
   import GlossaryDrawer from './lib/components/GlossaryDrawer.svelte';
   import { glossaryOpen, activeRoute } from './lib/stores/ui.js';
 
@@ -29,9 +31,10 @@
   }
 
   const routes = [
-    { id: 'sandbox', label: 'Sandbox' },
-    { id: 'coach',   label: 'Coach Mode' },
-    { id: 'drill',   label: 'Drill',     disabled: true },
+    { id: 'sandbox',  label: 'Sandbox' },
+    { id: 'coach',    label: 'Coach Mode' },
+    { id: 'drill',    label: 'Drill' },
+    { id: 'tutorial', label: 'Tutorial' },
   ];
 </script>
 
@@ -68,6 +71,10 @@
       <Sandbox />
     {:else if $activeRoute === 'coach'}
       <Coach />
+    {:else if $activeRoute === 'drill'}
+      <Drill />
+    {:else if $activeRoute === 'tutorial'}
+      <Tutorial on:done={() => activeRoute.set('coach')} />
     {/if}
   </main>
 
