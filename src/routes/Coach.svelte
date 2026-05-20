@@ -103,12 +103,7 @@
     phase = 'resolved';
   }
 
-  function openGlossary(term) {
-    glossaryTerm.set(term);
-    glossaryOpen.set(true);
-  }
-
-  // Initialize on mount
+  // Initialize
   initRound();
 
   $: downStr = ['', '1st', '2nd', '3rd', '4th'][situation.down] ?? `${situation.down}th`;
@@ -117,6 +112,7 @@
     : `OPP ${100 - situation.fieldPosition}`;
 </script>
 
+<div class="coach-page">
 <div class="coach-wrap">
 
   <!-- Situation strip -->
@@ -147,7 +143,7 @@
   <!-- Main layout -->
   <div class="coach-body">
 
-    <!-- Opponent panel -->
+    <!-- Opponent panel — fixed narrow column so the field stays small -->
     <div class="opponent-panel">
       <div class="panel-header">
         <span class="panel-label">OPPONENT</span>
@@ -162,7 +158,6 @@
         </div>
         <div class="opp-info">
           <div class="opp-personnel">{opponentFormation.personnelLabel}</div>
-          <p class="opp-desc">{opponentFormation.description}</p>
           {#if phase === 'resolved' && opponentPlayId}
             {@const oppPlays = playerSide === 'offense'
               ? getDefensePlays(opponentFormation.id)
@@ -197,8 +192,8 @@
               onclick={() => selectFormation(f.id)}
               disabled={phase === 'resolved'}
             >
-              <div class="fbn-name">{f.name}</div>
-              <div class="fbn-personnel">{f.personnel}</div>
+              <span class="fbn-name">{f.name}</span>
+              <span class="fbn-personnel">{f.personnel}</span>
             </button>
           {/each}
         </div>
@@ -242,10 +237,10 @@
     </div>
   </div>
 
-  <!-- Outcome panel -->
+  <!-- Outcome panel — compact, fits without pushing layout off-screen -->
   {#if phase === 'resolved' && result}
     <div class="outcome-panel" class:turnover={result.turnover} class:big-play={result.outcome_type === 'big_play' && !result.turnover}>
-      <div class="outcome-top">
+      <div class="outcome-row">
         <div class="outcome-yards">
           {#if result.turnover}
             <span class="yards-num neg">TURNOVER</span>
@@ -260,6 +255,8 @@
           <span class="outcome-label-badge">{outcomeLabel}</span>
           <span class="score-badge {scoreClass}">{scoreLabel} · {result.decision_score}/100</span>
         </div>
+        <div class="outcome-spacer"></div>
+        <button class="next-btn" onclick={initRound}>Next Play</button>
       </div>
 
       <p class="breakdown-text">{result.breakdown}</p>
@@ -271,30 +268,52 @@
           <span class="better-desc">— {bestCall.description}</span>
         </div>
       {/if}
-
-      <button class="next-btn" onclick={initRound}>
-        Next Play
-      </button>
     </div>
   {/if}
 
 </div>
+</div>
 
 <style>
-  .coach-wrap {
+  /*
+   * Outer shell: fills main-content, centers the scaled card.
+   * No padding here — the em-based card handles its own sizing.
+   */
+  .coach-page {
+    flex: 1;
+    min-height: 0;
     display: flex;
-    flex-direction: column;
-    gap: 0;
-    height: 100%;
-    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
   }
 
-  /* Situation strip */
+  /*
+   * The card.  font-size is driven by viewport height so every
+   * em-based child dimension scales proportionally.
+   *
+   *   clamp(min, ideal, max)
+   *   ideal = (dvh − topbar) / 32
+   *   At 960 dvh: (960−56)/32 = 28.25 → capped at 28px  (~1.75× native)
+   *   At 768 dvh: (768−56)/32 = 22.25px                  (~1.4× native)
+   *   At 500 dvh: (500−56)/32 = 13.9 → floored at 13px
+   *
+   * max-width stays in px; width in % so it never bleeds on narrow viewports.
+   */
+  .coach-wrap {
+    font-size: clamp(13px, calc((100dvh - 56px) / 32), 28px);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 960px;
+  }
+
+  /* ── Situation strip ─────────────────────────────── */
   .situation-bar {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    padding: 0.6rem 0;
+    gap: 1.25em;
+    padding: 0.35em 0;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
   }
@@ -302,18 +321,18 @@
   .sit-group {
     display: flex;
     align-items: baseline;
-    gap: 0.4rem;
+    gap: 0.35em;
   }
 
   .sit-label {
-    font-size: 0.62rem;
+    font-size: 0.6em;
     font-weight: 700;
     letter-spacing: 0.1em;
     color: var(--text-muted);
   }
 
   .sit-value {
-    font-size: 0.95rem;
+    font-size: 0.85em;
     font-weight: 700;
     color: var(--accent);
     font-family: monospace;
@@ -331,8 +350,8 @@
   .side-btn {
     background: none;
     border: none;
-    padding: 0.3rem 0.75rem;
-    font-size: 0.75rem;
+    padding: 0.25em 0.7em;
+    font-size: 0.73em;
     font-weight: 600;
     font-family: inherit;
     color: var(--text-muted);
@@ -343,111 +362,96 @@
   .side-btn:hover { background: var(--surface-raised); color: var(--text-primary); }
   .side-btn.active { background: var(--surface-raised); color: var(--text-primary); }
 
-  /* Main layout */
+  /* ── Main body ───────────────────────────────────── */
   .coach-body {
     display: grid;
-    grid-template-columns: 1fr 1.4fr;
-    gap: 1.25rem;
-    flex: 1;
-    overflow: hidden;
-    padding-top: 1rem;
-    min-height: 0;
+    /* Left column in em so it scales with font-size (190px ÷ 16px = 11.875em) */
+    grid-template-columns: 11.875em 1fr;
+    gap: 1em;
+    padding-top: 0.6em;
   }
 
-  /* Opponent panel */
+  /* ── Opponent panel ──────────────────────────────── */
   .opponent-panel {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    overflow-y: auto;
-    min-height: 0;
+    gap: 0.4em;
   }
 
   .panel-header {
     display: flex;
     align-items: baseline;
-    gap: 0.5rem;
+    gap: 0.45em;
     flex-shrink: 0;
   }
 
   .panel-label {
-    font-size: 0.62rem;
+    font-size: 0.6em;
     font-weight: 700;
     letter-spacing: 0.1em;
     color: var(--text-muted);
   }
 
   .formation-name {
-    font-size: 0.88rem;
+    font-size: 0.84em;
     font-weight: 700;
     color: var(--text-primary);
   }
 
-  .field-wrap {
-    flex-shrink: 0;
-  }
+  .field-wrap { flex-shrink: 0; }
 
   .opp-info {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.3em;
   }
 
   .opp-personnel {
-    font-size: 0.7rem;
+    font-size: 0.67em;
     font-weight: 600;
     color: var(--text-muted);
-    letter-spacing: 0.04em;
-  }
-
-  .opp-desc {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    line-height: 1.5;
-    margin: 0;
+    letter-spacing: 0.03em;
   }
 
   .ai-play-reveal {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.6rem;
+    gap: 0.35em;
+    padding: 0.32em 0.55em;
     background: var(--surface-raised);
     border: 1px solid var(--border);
     border-radius: 4px;
-    margin-top: 0.25rem;
   }
 
   .ai-play-label {
-    font-size: 0.62rem;
+    font-size: 0.58em;
     font-weight: 700;
     letter-spacing: 0.08em;
     color: var(--text-muted);
   }
 
   .ai-play-name {
-    font-size: 0.82rem;
+    font-size: 0.78em;
     font-weight: 600;
     color: var(--text-primary);
   }
 
-  /* Call panel */
+  /* ── Call panel ──────────────────────────────────── */
   .call-panel {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    overflow-y: auto;
-    min-height: 0;
+    gap: 0.55em;
   }
 
   .picker-section {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.28em;
+    flex-shrink: 0;
   }
 
   .picker-label {
-    font-size: 0.62rem;
+    font-size: 0.6em;
     font-weight: 700;
     letter-spacing: 0.1em;
     color: var(--text-muted);
@@ -456,20 +460,20 @@
   .formation-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.4rem;
+    gap: 0.3em;
   }
 
   .formation-btn {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 0.55rem 0.75rem;
+    padding: 0.38em 0.6em;
     text-align: left;
     cursor: pointer;
     transition: border-color 0.1s, background 0.1s;
     display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
+    align-items: baseline;
+    gap: 0.4em;
   }
 
   .formation-btn:hover:not(:disabled) {
@@ -482,19 +486,16 @@
     background: var(--surface-raised);
   }
 
-  .formation-btn:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
+  .formation-btn:disabled { opacity: 0.5; cursor: default; }
 
   .fbn-name {
-    font-size: 0.8rem;
+    font-size: 0.78em;
     font-weight: 700;
     color: var(--text-primary);
   }
 
   .fbn-personnel {
-    font-size: 0.65rem;
+    font-size: 0.62em;
     color: var(--text-muted);
     font-family: monospace;
   }
@@ -503,20 +504,20 @@
   .play-list {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.22em;
   }
 
   .play-btn {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 0.55rem 0.75rem;
+    padding: 0.32em 0.65em;
     text-align: left;
     cursor: pointer;
     transition: border-color 0.1s, background 0.1s;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.1em;
   }
 
   .play-btn:hover:not(:disabled) {
@@ -529,35 +530,32 @@
     background: var(--surface-raised);
   }
 
-  .play-btn:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
+  .play-btn:disabled { opacity: 0.5; cursor: default; }
 
   .play-btn-top {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35em;
   }
 
   .play-name {
-    font-size: 0.82rem;
+    font-size: 0.8em;
     font-weight: 700;
     color: var(--text-primary);
   }
 
   .play-desc {
-    font-size: 0.74rem;
-    color: var(--text-secondary);
-    line-height: 1.4;
+    font-size: 0.67em;
+    color: var(--text-muted);
+    line-height: 1.3;
   }
 
-  /* Tag pill */
+  /* Tag pill — px padding intentional (sub-pixel decorative border) */
   .tag {
-    font-size: 0.58rem;
+    font-size: 0.56em;
     font-weight: 700;
     letter-spacing: 0.06em;
-    padding: 1px 5px;
+    padding: 1px 4px;
     border-radius: 2px;
     border: 1px solid var(--border);
     color: var(--text-muted);
@@ -565,9 +563,9 @@
   }
 
   .picker-hint {
-    font-size: 0.78rem;
+    font-size: 0.75em;
     color: var(--text-muted);
-    padding: 0.5rem 0;
+    padding: 0.3em 0;
   }
 
   /* Run Play button */
@@ -575,54 +573,50 @@
     background: var(--accent);
     border: none;
     border-radius: 4px;
-    padding: 0.65rem 1.25rem;
-    font-size: 0.85rem;
+    padding: 0.5em 1em;
+    font-size: 0.8em;
     font-weight: 800;
     letter-spacing: 0.08em;
     font-family: inherit;
     color: #0b1117;
     cursor: pointer;
     transition: opacity 0.1s, transform 0.05s;
-    margin-top: auto;
+    margin-top: 0.25em;
   }
 
   .run-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
   .run-btn:active:not(:disabled) { transform: translateY(0); }
   .run-btn:disabled { opacity: 0.35; cursor: default; }
 
-  /* Outcome panel */
+  /* ── Outcome panel ───────────────────────────────── */
   .outcome-panel {
     border-top: 1px solid var(--border);
-    padding: 1rem 0;
+    padding: 0.5em 0;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.3em;
   }
 
-  .outcome-panel.turnover {
-    border-top-color: #8b2020;
-  }
+  .outcome-panel.turnover  { border-top-color: #8b2020; }
+  .outcome-panel.big-play  { border-top-color: var(--accent); }
 
-  .outcome-panel.big-play {
-    border-top-color: var(--accent);
-  }
-
-  .outcome-top {
+  /* Single row: yards | labels | spacer | Next Play */
+  .outcome-row {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
-    flex-wrap: wrap;
+    gap: 0.9em;
   }
 
   .outcome-yards {
     display: flex;
     align-items: baseline;
-    gap: 0.3rem;
+    gap: 0.25em;
+    flex-shrink: 0;
   }
 
   .yards-num {
-    font-size: 2.2rem;
+    font-size: 1.6em;
     font-weight: 900;
     font-family: monospace;
     line-height: 1;
@@ -633,82 +627,84 @@
   .yards-num.pos { color: var(--off-accent); }
 
   .yards-unit {
-    font-size: 0.9rem;
+    font-size: 0.78em;
     font-weight: 600;
     color: var(--text-muted);
   }
 
   .outcome-meta {
     display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+    align-items: center;
+    gap: 0.5em;
+    flex-wrap: wrap;
   }
 
   .outcome-label-badge {
-    font-size: 0.72rem;
+    font-size: 0.7em;
     font-weight: 800;
     letter-spacing: 0.1em;
     color: var(--text-primary);
   }
 
+  /* px padding intentional — sub-pixel decorative */
   .score-badge {
-    font-size: 0.68rem;
+    font-size: 0.65em;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     padding: 2px 6px;
     border-radius: 3px;
-    width: fit-content;
   }
 
-  .score-badge.excellent { background: rgba(42,175,96,0.15); color: #2aaf60; border: 1px solid rgba(42,175,96,0.3); }
-  .score-badge.good      { background: rgba(42,175,96,0.08); color: #5aaf80; border: 1px solid rgba(42,175,96,0.2); }
+  .score-badge.excellent { background: rgba(42,175,96,0.15);  color: #2aaf60; border: 1px solid rgba(42,175,96,0.3); }
+  .score-badge.good      { background: rgba(42,175,96,0.08);  color: #5aaf80; border: 1px solid rgba(42,175,96,0.2); }
   .score-badge.neutral   { background: rgba(232,197,58,0.10); color: var(--accent); border: 1px solid rgba(232,197,58,0.2); }
-  .score-badge.poor      { background: rgba(200,80,40,0.10); color: #c85030; border: 1px solid rgba(200,80,40,0.2); }
+  .score-badge.poor      { background: rgba(200,80,40,0.10);  color: #c85030; border: 1px solid rgba(200,80,40,0.2); }
+
+  .outcome-spacer { flex: 1; }
 
   .breakdown-text {
-    font-size: 0.84rem;
+    font-size: 0.78em;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.5;
     margin: 0;
-    max-width: 62ch;
+    /* clamp to 2 lines so it never blows up the panel */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .better-call {
-    font-size: 0.78rem;
+    font-size: 0.72em;
     color: var(--text-secondary);
     display: flex;
     align-items: baseline;
-    gap: 0.35rem;
+    gap: 0.3em;
     flex-wrap: wrap;
   }
 
   .better-label {
-    font-size: 0.62rem;
+    font-size: 0.6em;
     font-weight: 700;
     letter-spacing: 0.08em;
     color: var(--text-muted);
   }
 
-  .better-name {
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-
-  .better-desc {
-    color: var(--text-muted);
-  }
+  .better-name { font-weight: 700; color: var(--text-primary); }
+  .better-desc { color: var(--text-muted); }
 
   .next-btn {
     background: none;
     border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 0.45rem 1rem;
-    font-size: 0.8rem;
+    padding: 0.35em 0.85em;
+    font-size: 0.75em;
     font-weight: 600;
     font-family: inherit;
     color: var(--text-primary);
     cursor: pointer;
-    width: fit-content;
+    white-space: nowrap;
+    flex-shrink: 0;
     transition: border-color 0.1s, background 0.1s;
   }
 

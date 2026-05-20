@@ -183,6 +183,7 @@
   .sandbox {
     display: grid;
     grid-template-columns: 340px 1fr;
+    grid-template-rows: 1fr;
     gap: 1.5rem;
     height: calc(100dvh - 56px);
     overflow: hidden;
