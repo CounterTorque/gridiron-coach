@@ -1,5 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
+  import { tweened } from 'svelte/motion';
+  import { cubicOut } from 'svelte/easing';
 
   export let offFormation = null;
   export let defFormation = null;
@@ -13,16 +15,14 @@
   const DEF_STROKE = '#4a7abf';
   const LOS = 60;
 
-  // Defense formation data has "their backfield" at higher y (same as offense),
-  // so mirror across the LOS so they face the offense correctly.
   const mirrorY = y => 120 - y;
 
   // Animation phases
   let phase = 0; // 0=presnap 1=snap 2=routes 3=ball-moving 4=done
 
-  // Ball position (reactive, CSS transition animates it)
-  let ballX = 50;
-  let ballY = LOS + 2;
+  // Ball position — tweened for smooth SVG-unit animation
+  const ballX = tweened(50,         { duration: 1500, easing: cubicOut });
+  const ballY = tweened(LOS + 2,    { duration: 1500, easing: cubicOut });
 
   let routesVisible = false;
   let routeLines = [];
@@ -89,8 +89,8 @@
     after(250,  () => { phase = 1; });
     after(650,  () => { routesVisible = true; phase = 2; });
     after(1200, () => {
-      ballX = finalX();
-      ballY = finalY();
+      ballX.set(finalX());
+      ballY.set(finalY());
       phase = 3;
     });
     after(3000, () => { phase = 4; onDone(); });
@@ -101,8 +101,8 @@
   function skip() {
     timers.forEach(clearTimeout);
     timers = [];
-    ballX = finalX();
-    ballY = finalY();
+    ballX.set(finalX(), { duration: 0 });
+    ballY.set(finalY(), { duration: 0 });
     phase = 4;
     onDone();
   }
@@ -164,16 +164,23 @@
       {/each}
     {/if}
 
-    <!-- Ball -->
+    <!-- Ball (football icon, tweened position via SVG transform) -->
     {#if phase >= 1}
-      <circle class="ball" style="cx: {ballX}; cy: {ballY};"
-        r="2.2" fill="#ffd700" stroke="#b8860b" stroke-width="0.5"/>
-    {/if}
-
-    <!-- Turnover mark -->
-    {#if phase >= 4 && result?.turnover}
-      <text x={ballX} y={ballY + 1} text-anchor="middle" dominant-baseline="middle"
-        font-size="6" fill="rgba(200,50,50,0.95)">✕</text>
+      <g transform="translate({$ballX} {$ballY})" class="football">
+        <!-- Body -->
+        <ellipse rx="1.45" ry="2.5" fill="#c67c3a" stroke="#7a3f0a" stroke-width="0.35"/>
+        <!-- Longitudinal seam -->
+        <line x1="0" y1="-2.5" x2="0" y2="2.5" stroke="white" stroke-width="0.22" opacity="0.65"/>
+        <!-- Laces (3 crossbars centered on seam) -->
+        <line x1="-0.7" y1="-0.85" x2="0.7" y2="-0.85" stroke="white" stroke-width="0.3" opacity="0.9" stroke-linecap="round"/>
+        <line x1="-0.85" y1="0"    x2="0.85" y2="0"    stroke="white" stroke-width="0.35" opacity="0.95" stroke-linecap="round"/>
+        <line x1="-0.7" y1="0.85"  x2="0.7" y2="0.85"  stroke="white" stroke-width="0.3" opacity="0.9" stroke-linecap="round"/>
+        <!-- Turnover X overlay -->
+        {#if phase >= 4 && result?.turnover}
+          <text y="1" text-anchor="middle" dominant-baseline="middle"
+            font-size="5.5" fill="rgba(200,50,50,0.95)" stroke="rgba(255,255,255,0.5)" stroke-width="0.3">✕</text>
+        {/if}
+      </g>
     {/if}
   </svg>
 
@@ -197,10 +204,6 @@
     border-radius: 6px;
     display: block;
     box-shadow: var(--neu-raised-sm);
-  }
-
-  .ball {
-    transition: cx 1.5s cubic-bezier(0.2, 0.8, 0.3, 1), cy 1.5s cubic-bezier(0.2, 0.8, 0.3, 1);
   }
 
   .route-line {
