@@ -2,6 +2,15 @@ import matchupsData from '../data/matchups.json';
 import playsData from '../data/plays.json';
 import formationsData from '../data/formations.json';
 
+export function getFormationById(id) {
+  return formationsData.find(f => f.id === id) ?? null;
+}
+
+export function getPlayById(side, formationId, playId) {
+  const plays = side === 'offense' ? getOffensePlays(formationId) : getDefensePlays(formationId);
+  return plays.find(p => p.id === playId) ?? null;
+}
+
 function randn() {
   const u = 1 - Math.random();
   const v = Math.random();

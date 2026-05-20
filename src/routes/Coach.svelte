@@ -1,45 +1,61 @@
 <script>
   import FormationField from '../lib/components/FormationField.svelte';
+  import Playout from '../lib/components/Playout.svelte';
   import {
     getOffensePlays, getDefensePlays,
     getOffenseFormations, getDefenseFormations,
-    generateSituation, pickAIFormation, pickAIPlay,
-    resolve, getBestCall
+    pickAIFormation, pickAIPlay,
+    resolve, getBestCall,
+    getFormationById, getPlayById
   } from '../lib/matchup.js';
-  import { glossaryOpen, glossaryTerm } from '../lib/stores/ui.js';
 
-  // --- state ---
+  // ── Drive state ────────────────────────────────────────────────
+  let fieldPosition = 20; // 0=own goal, 100=opponent end zone
+  let down = 1;
+  let distance = 10;
+  let offenseScore = 0;
+  let defenseScore = 0;
+  let driveXP = 0;
+  let driveNumber = 1;
+  // 'active' | 'first_down' | 'touchdown' | 'turnover' | 'turnover_on_downs' | 'field_goal' | 'field_goal_miss' | 'punt'
+  let driveStatus = 'active';
+  let lastPlayXP = 0;
+
+  // ── Round state ────────────────────────────────────────────────
   let playerSide = 'offense';
-  let phase = 'call'; // 'call' | 'resolved'
+  // 'call' | 'fourth_down' | 'playout' | 'resolved' | 'drive_over'
+  let phase = 'call';
 
-  let situation = generateSituation();
   let opponentFormation = null;
   let opponentPlayId = null;
-
   let selectedFormationId = null;
   let selectedPlayId = null;
   let result = null;
 
-  // --- derived ---
+  // Held between runPlay → onPlayoutDone
+  let pendingOff = null; // { formationId, playId }
+  let pendingDef = null;
+  // Snap-shot of situation at time of call (before drive update)
+  let calledDistance = 10;
+
+  // ── Derived ────────────────────────────────────────────────────
+  $: situation = { down, distance, fieldPosition };
   $: playerFormations = playerSide === 'offense' ? getOffenseFormations() : getDefenseFormations();
   $: selectedFormation = playerFormations.find(f => f.id === selectedFormationId) ?? null;
   $: playerPlays = selectedFormationId
     ? (playerSide === 'offense' ? getOffensePlays(selectedFormationId) : getDefensePlays(selectedFormationId))
     : [];
 
-  $: needsToMove = result && !result.turnover && (result.yards >= situation.distance);
+  $: inFGRange = (100 - fieldPosition) <= 48; // kick from ~65 yards max
+  $: yardsToGo = 100 - fieldPosition;
+
   $: outcomeLabel = result
-    ? result.turnover
-      ? 'TURNOVER'
-      : result.outcome_type === 'stuff'
-        ? 'STUFFED'
-        : result.outcome_type === 'short'
-          ? 'SHORT GAIN'
-          : needsToMove
-            ? 'FIRST DOWN'
-            : result.outcome_type === 'big_play'
-              ? 'BIG PLAY'
-              : 'GAIN'
+    ? result.turnover ? 'TURNOVER'
+    : result.outcome_type === 'stuff'    ? 'STUFFED'
+    : result.outcome_type === 'short'    ? 'SHORT GAIN'
+    : result.yards >= calledDistance     ? 'FIRST DOWN'
+    : result.outcome_type === 'big_play' ? 'BIG PLAY'
+    : 'GAIN'
     : '';
 
   $: scoreLabel = result
@@ -61,28 +77,117 @@
     ? getBestCall(
         playerSide === 'offense' ? selectedFormationId : opponentFormation?.id,
         playerSide === 'offense' ? opponentFormation?.id : selectedFormationId,
-        opponentPlayId,
-        playerSide
+        opponentPlayId, playerSide
       )
     : null;
 
-  // --- functions ---
-  function initRound() {
+  $: downStr = ['','1st','2nd','3rd','4th'][down] ?? `${down}th`;
+  $: fieldStr = fieldPosition <= 50 ? `OWN ${fieldPosition}` : `OPP ${100 - fieldPosition}`;
+
+  // Playout props (resolved after animation to avoid flicker)
+  $: playoutOffFormation = pendingOff ? getFormationById(pendingOff.formationId) : null;
+  $: playoutDefFormation = pendingDef ? getFormationById(pendingDef.formationId) : null;
+  $: playoutOffPlay = pendingOff ? getPlayById('offense', pendingOff.formationId, pendingOff.playId) : null;
+
+  // Score bar labels
+  $: offLabel = playerSide === 'offense' ? 'YOU' : 'OPP';
+  $: defLabel = playerSide === 'defense' ? 'YOU' : 'OPP';
+  $: playerScore = playerSide === 'offense' ? offenseScore : defenseScore;
+  $: oppScore    = playerSide === 'offense' ? defenseScore : offenseScore;
+
+  // Drive over display
+  $: driveOverTitle =
+    driveStatus === 'touchdown'        ? 'TOUCHDOWN!'
+    : driveStatus === 'field_goal'     ? 'FIELD GOAL'
+    : driveStatus === 'field_goal_miss'? 'FIELD GOAL MISSED'
+    : driveStatus === 'turnover'       ? 'TURNOVER'
+    : driveStatus === 'turnover_on_downs' ? 'TURNOVER ON DOWNS'
+    : driveStatus === 'punt'           ? 'PUNT'
+    : '';
+
+  $: driveOverClass =
+    driveStatus === 'touchdown' || driveStatus === 'field_goal' ? 'score'
+    : driveStatus === 'turnover' || driveStatus === 'turnover_on_downs' ? 'bad'
+    : 'neutral';
+
+  // ── Helpers ────────────────────────────────────────────────────
+  function calcXP(score) {
+    if (score >= 80) return 25;
+    if (score >= 60) return 15;
+    if (score >= 40) return 5;
+    return 0;
+  }
+
+  function applyDriveUpdate(playResult) {
+    if (playResult.turnover) {
+      driveStatus = 'turnover';
+      return 'drive_over';
+    }
+
+    const newFP = fieldPosition + playResult.yards;
+
+    if (newFP >= 100) {
+      if (playerSide === 'offense') offenseScore += 7;
+      else defenseScore += 7;
+      driveStatus = 'touchdown';
+      fieldPosition = 100;
+      return 'drive_over';
+    }
+
+    fieldPosition = Math.max(1, newFP);
+
+    if (playResult.yards >= calledDistance) {
+      down = 1;
+      distance = Math.min(10, Math.max(1, 100 - fieldPosition));
+      driveStatus = 'first_down';
+      return 'continue';
+    }
+
+    if (down < 4) {
+      down++;
+      distance = Math.max(1, distance - Math.max(0, playResult.yards));
+      driveStatus = 'active';
+      return 'continue';
+    }
+
+    // Was on 4th down going for it — failed
+    driveStatus = 'turnover_on_downs';
+    return 'drive_over';
+  }
+
+  // ── Init ───────────────────────────────────────────────────────
+  function initPlay() {
     opponentFormation = pickAIFormation(playerSide === 'offense' ? 'defense' : 'offense');
     opponentPlayId = null;
     selectedFormationId = null;
     selectedPlayId = null;
     result = null;
-    situation = generateSituation();
-    phase = 'call';
+    lastPlayXP = 0;
+    pendingOff = null;
+    pendingDef = null;
+
+    phase = down === 4 ? 'fourth_down' : 'call';
+  }
+
+  function initDrive(startFP = 20, side = playerSide) {
+    playerSide = side;
+    fieldPosition = startFP;
+    down = 1;
+    distance = 10;
+    driveXP = 0;
+    driveNumber++;
+    initPlay();
   }
 
   function setSide(side) {
     if (side === playerSide) return;
-    playerSide = side;
-    initRound();
+    initDrive(20, side);
+    offenseScore = 0;
+    defenseScore = 0;
+    driveNumber = 0;
   }
 
+  // ── Actions ────────────────────────────────────────────────────
   function selectFormation(id) {
     selectedFormationId = id;
     selectedPlayId = null;
@@ -90,6 +195,7 @@
 
   function runPlay() {
     if (!selectedFormationId || !selectedPlayId || !opponentFormation) return;
+    calledDistance = distance;
 
     const aiPlay = pickAIPlay(opponentFormation.id, playerSide === 'offense' ? 'defense' : 'offense');
     opponentPlayId = aiPlay?.id ?? null;
@@ -99,175 +205,330 @@
     const defFormationId = playerSide === 'defense' ? selectedFormationId : opponentFormation.id;
     const defPlayId      = playerSide === 'defense' ? selectedPlayId      : opponentPlayId;
 
-    result = resolve({ offFormationId, offPlayId, defFormationId, defPlayId, playerSide, situation });
+    pendingOff = { formationId: offFormationId, playId: offPlayId };
+    pendingDef = { formationId: defFormationId, playId: defPlayId };
+    phase = 'playout';
+  }
+
+  function onPlayoutDone() {
+    if (!pendingOff || !pendingDef) return;
+    result = resolve({
+      offFormationId: pendingOff.formationId,
+      offPlayId: pendingOff.playId,
+      defFormationId: pendingDef.formationId,
+      defPlayId: pendingDef.playId,
+      playerSide,
+      situation
+    });
+    lastPlayXP = calcXP(result.decision_score);
+    driveXP += lastPlayXP;
     phase = 'resolved';
   }
 
-  // Initialize
-  initRound();
+  function advanceFromResolved() {
+    if (!result) return;
+    const next = applyDriveUpdate(result);
+    if (next === 'drive_over') {
+      phase = 'drive_over';
+    } else if (down === 4) {
+      // Next play is 4th down — show choice
+      result = null;
+      opponentFormation = pickAIFormation(playerSide === 'offense' ? 'defense' : 'offense');
+      selectedFormationId = null;
+      selectedPlayId = null;
+      phase = 'fourth_down';
+    } else {
+      initPlay();
+    }
+  }
 
-  $: downStr = ['', '1st', '2nd', '3rd', '4th'][situation.down] ?? `${situation.down}th`;
-  $: fieldStr = situation.fieldPosition <= 50
-    ? `OWN ${situation.fieldPosition}`
-    : `OPP ${100 - situation.fieldPosition}`;
+  // 4th down choices
+  function choosePunt() {
+    const puntYards = 38 + Math.floor(Math.random() * 10);
+    const kickLands = fieldPosition + puntYards;
+    const newFP = kickLands >= 95 ? 20 : Math.max(15, 100 - kickLands);
+    driveStatus = 'punt';
+    phase = 'drive_over';
+    // store newFP so startNewDrive can use it
+    _pendingNewFP = newFP;
+  }
+
+  let _pendingNewFP = null;
+
+  function chooseFieldGoal() {
+    const kickYards = yardsToGo + 17;
+    const prob = Math.max(0.15, 1 - (kickYards - 20) * 0.014);
+    if (Math.random() < prob) {
+      if (playerSide === 'offense') offenseScore += 3;
+      else defenseScore += 3;
+      driveStatus = 'field_goal';
+    } else {
+      driveStatus = 'field_goal_miss';
+    }
+    phase = 'drive_over';
+  }
+
+  function chooseGoForIt() {
+    phase = 'call';
+    opponentFormation = pickAIFormation(playerSide === 'offense' ? 'defense' : 'offense');
+    selectedFormationId = null;
+    selectedPlayId = null;
+  }
+
+  function startNewDrive() {
+    let newSide = playerSide === 'offense' ? 'defense' : 'offense';
+    let startFP;
+
+    switch (driveStatus) {
+      case 'touchdown':
+      case 'field_goal':
+        startFP = 25;
+        break;
+      case 'punt': {
+        startFP = _pendingNewFP ?? 20;
+        _pendingNewFP = null;
+        break;
+      }
+      case 'turnover':
+        startFP = Math.max(1, Math.min(80, 100 - fieldPosition));
+        break;
+      case 'turnover_on_downs':
+      case 'field_goal_miss':
+        startFP = Math.max(1, 100 - fieldPosition);
+        break;
+      default:
+        startFP = 20;
+    }
+
+    initDrive(startFP, newSide);
+  }
+
+  // Initial setup
+  initPlay();
 </script>
 
 <div class="coach-wrap">
+
+  <!-- Score bar -->
+  <div class="score-bar">
+    <div class="score-group">
+      <span class="score-side-label">{offLabel}</span>
+      <span class="score-num off">{offenseScore}</span>
+    </div>
+    <span class="score-sep">—</span>
+    <div class="score-group">
+      <span class="score-num def">{defenseScore}</span>
+      <span class="score-side-label">{defLabel}</span>
+    </div>
+    <div class="score-spacer"></div>
+    <div class="drive-info">
+      <span class="drive-label">DRIVE {driveNumber}</span>
+      {#if driveXP > 0}
+        <span class="xp-badge">+{driveXP} XP</span>
+      {/if}
+    </div>
+    <div class="side-toggle">
+      <button class="side-btn" class:active={playerSide === 'offense'} onclick={() => setSide('offense')}>Offense</button>
+      <button class="side-btn" class:active={playerSide === 'defense'} onclick={() => setSide('defense')}>Defense</button>
+    </div>
+  </div>
 
   <!-- Situation strip -->
   <div class="situation-bar">
     <div class="sit-group">
       <span class="sit-label">DOWN</span>
-      <span class="sit-value">{downStr} &amp; {situation.distance}</span>
+      <span class="sit-value">{downStr} &amp; {distance}</span>
     </div>
     <div class="sit-group">
       <span class="sit-label">FIELD POS</span>
       <span class="sit-value">{fieldStr}</span>
     </div>
-    <div class="sit-spacer"></div>
-    <div class="side-toggle">
-      <button
-        class="side-btn"
-        class:active={playerSide === 'offense'}
-        onclick={() => setSide('offense')}
-      >Offense</button>
-      <button
-        class="side-btn"
-        class:active={playerSide === 'defense'}
-        onclick={() => setSide('defense')}
-      >Defense</button>
-    </div>
   </div>
 
-  <!-- Main layout -->
-  <div class="coach-body">
+  <!-- ── PLAYOUT phase ─────────────────────────────────────── -->
+  {#if phase === 'playout'}
+    <div class="playout-section">
+      <Playout
+        offFormation={playoutOffFormation}
+        defFormation={playoutDefFormation}
+        offPlay={playoutOffPlay}
+        {result}
+        onDone={onPlayoutDone}
+      />
+    </div>
 
-    <!-- Opponent panel — fixed narrow column so the field stays small -->
-    <div class="opponent-panel">
-      <div class="panel-header">
-        <span class="panel-label">OPPONENT</span>
+  <!-- ── DRIVE OVER phase ──────────────────────────────────── -->
+  {:else if phase === 'drive_over'}
+    <div class="drive-over-panel {driveOverClass}">
+      <div class="drive-over-title">{driveOverTitle}</div>
+      <div class="drive-over-scores">
+        <span class="dos-label">SCORE</span>
+        <span class="dos-val">{offLabel} <strong>{offenseScore}</strong> – <strong>{defenseScore}</strong> {defLabel}</span>
+      </div>
+      <div class="drive-over-xp">
+        <span class="dos-label">DRIVE XP</span>
+        <span class="dos-xp">+{driveXP}</span>
+      </div>
+      <button class="new-drive-btn" onclick={startNewDrive}>New Drive →</button>
+    </div>
+
+  <!-- ── CALL / FOURTH DOWN / RESOLVED phases ─────────────── -->
+  {:else}
+    <div class="coach-body">
+
+      <!-- Opponent panel -->
+      <div class="opponent-panel">
+        <div class="panel-header">
+          <span class="panel-label">OPPONENT</span>
+          {#if opponentFormation}
+            <span class="formation-name">{opponentFormation.name}</span>
+          {/if}
+        </div>
+
         {#if opponentFormation}
-          <span class="formation-name">{opponentFormation.name}</span>
+          <div class="field-wrap">
+            <FormationField formation={opponentFormation} compact={true} />
+          </div>
+          <div class="opp-info">
+            <div class="opp-personnel">{opponentFormation.personnelLabel}</div>
+            {#if phase === 'resolved' && opponentPlayId}
+              {@const oppPlays = playerSide === 'offense'
+                ? getDefensePlays(opponentFormation.id)
+                : getOffensePlays(opponentFormation.id)}
+              {@const oppPlay = oppPlays.find(p => p.id === opponentPlayId)}
+              {#if oppPlay}
+                <div class="ai-play-reveal">
+                  <span class="ai-play-label">THEY CALLED:</span>
+                  <span class="ai-play-name">{oppPlay.name}</span>
+                  <span class="ai-play-tag tag">{oppPlay.tag}</span>
+                </div>
+              {/if}
+            {/if}
+          </div>
         {/if}
       </div>
 
-      {#if opponentFormation}
-        <div class="field-wrap">
-          <FormationField formation={opponentFormation} compact={true} />
-        </div>
-        <div class="opp-info">
-          <div class="opp-personnel">{opponentFormation.personnelLabel}</div>
-          {#if phase === 'resolved' && opponentPlayId}
-            {@const oppPlays = playerSide === 'offense'
-              ? getDefensePlays(opponentFormation.id)
-              : getOffensePlays(opponentFormation.id)}
-            {@const oppPlay = oppPlays.find(p => p.id === opponentPlayId)}
-            {#if oppPlay}
-              <div class="ai-play-reveal">
-                <span class="ai-play-label">THEY CALLED:</span>
-                <span class="ai-play-name">{oppPlay.name}</span>
-                <span class="ai-play-tag tag">{oppPlay.tag}</span>
-              </div>
-            {/if}
-          {/if}
-        </div>
-      {/if}
-    </div>
+      <!-- Right panel: 4th-down choice | call | resolved -->
+      <div class="call-panel">
 
-    <!-- Player call panel -->
-    <div class="call-panel">
-      <div class="panel-header">
-        <span class="panel-label">YOUR CALL</span>
-      </div>
-
-      <!-- Formation picker -->
-      <div class="picker-section">
-        <div class="picker-label">Formation</div>
-        <div class="formation-grid">
-          {#each playerFormations as f}
-            <button
-              class="formation-btn"
-              class:selected={selectedFormationId === f.id}
-              onclick={() => selectFormation(f.id)}
-              disabled={phase === 'resolved'}
-            >
-              <span class="fbn-name">{f.name}</span>
-              <span class="fbn-personnel">{f.personnel}</span>
-            </button>
-          {/each}
-        </div>
-      </div>
-
-      <!-- Play picker -->
-      {#if playerPlays.length}
-        <div class="picker-section">
-          <div class="picker-label">Play</div>
-          <div class="play-list">
-            {#each playerPlays as play}
-              <button
-                class="play-btn"
-                class:selected={selectedPlayId === play.id}
-                onclick={() => (selectedPlayId = play.id)}
-                disabled={phase === 'resolved'}
-              >
-                <div class="play-btn-top">
-                  <span class="play-name">{play.name}</span>
-                  <span class="play-tag tag">{play.tag}</span>
-                </div>
-                <div class="play-desc">{play.description}</div>
-              </button>
-            {/each}
+        {#if phase === 'fourth_down'}
+          <!-- 4th down decision -->
+          <div class="panel-header">
+            <span class="panel-label">4TH DOWN DECISION</span>
           </div>
-        </div>
-      {:else}
-        <div class="picker-hint">Pick a formation to see plays</div>
-      {/if}
+          <p class="fourth-sub">{downStr} &amp; {distance} — {fieldStr}</p>
+          <div class="fourth-options">
+            <button class="fourth-btn punt" onclick={choosePunt}>
+              <span class="fb-name">Punt</span>
+              <span class="fb-desc">Flip field position. ~40 yards.</span>
+            </button>
+            {#if inFGRange}
+              <button class="fourth-btn fg" onclick={chooseFieldGoal}>
+                <span class="fb-name">Field Goal</span>
+                <span class="fb-desc">{yardsToGo + 17} yd attempt · 3 pts if good</span>
+              </button>
+            {/if}
+            <button class="fourth-btn go" onclick={chooseGoForIt}>
+              <span class="fb-name">Go For It</span>
+              <span class="fb-desc">Call a play. Convert or turn it over.</span>
+            </button>
+          </div>
 
-      <!-- Run Play button -->
-      {#if phase === 'call'}
-        <button
-          class="run-btn"
-          disabled={!selectedFormationId || !selectedPlayId}
-          onclick={runPlay}
-        >
-          RUN PLAY
-        </button>
-      {/if}
-    </div>
-  </div>
+        {:else}
+          <!-- Formation + play picker -->
+          <div class="panel-header">
+            <span class="panel-label">YOUR CALL</span>
+          </div>
 
-  <!-- Outcome panel — compact, fits without pushing layout off-screen -->
-  {#if phase === 'resolved' && result}
-    <div class="outcome-panel" class:turnover={result.turnover} class:big-play={result.outcome_type === 'big_play' && !result.turnover}>
-      <div class="outcome-row">
-        <div class="outcome-yards">
-          {#if result.turnover}
-            <span class="yards-num neg">TURNOVER</span>
-          {:else}
-            <span class="yards-num" class:neg={result.yards <= 0} class:pos={result.yards > 0}>
-              {result.yards > 0 ? '+' : ''}{result.yards}
-            </span>
-            <span class="yards-unit">yds</span>
+          <div class="picker-section">
+            <div class="picker-label">Formation</div>
+            <div class="formation-grid">
+              {#each playerFormations as f}
+                <button
+                  class="formation-btn"
+                  class:selected={selectedFormationId === f.id}
+                  onclick={() => selectFormation(f.id)}
+                  disabled={phase === 'resolved'}
+                >
+                  <span class="fbn-name">{f.name}</span>
+                  <span class="fbn-personnel">{f.personnel}</span>
+                </button>
+              {/each}
+            </div>
+          </div>
+
+          {#if playerPlays.length}
+            <div class="picker-section">
+              <div class="picker-label">Play</div>
+              <div class="play-list">
+                {#each playerPlays as play}
+                  <button
+                    class="play-btn"
+                    class:selected={selectedPlayId === play.id}
+                    onclick={() => (selectedPlayId = play.id)}
+                    disabled={phase === 'resolved'}
+                  >
+                    <div class="play-btn-top">
+                      <span class="play-name">{play.name}</span>
+                      <span class="play-tag tag">{play.tag}</span>
+                    </div>
+                    <div class="play-desc">{play.description}</div>
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if phase === 'call'}
+            <div class="picker-hint">Pick a formation to see plays</div>
           {/if}
-        </div>
-        <div class="outcome-meta">
-          <span class="outcome-label-badge">{outcomeLabel}</span>
-          <span class="score-badge {scoreClass}">{scoreLabel} · {result.decision_score}/100</span>
-        </div>
-        <div class="outcome-spacer"></div>
-        <button class="next-btn" onclick={initRound}>Next Play</button>
+
+          {#if phase === 'call'}
+            <button class="run-btn" disabled={!selectedFormationId || !selectedPlayId} onclick={runPlay}>
+              RUN PLAY
+            </button>
+          {/if}
+        {/if}
       </div>
-
-      <p class="breakdown-text">{result.breakdown}</p>
-
-      {#if bestCall}
-        <div class="better-call">
-          <span class="better-label">BETTER CALL:</span>
-          <span class="better-name">{bestCall.name}</span>
-          <span class="better-desc">— {bestCall.description}</span>
-        </div>
-      {/if}
     </div>
+
+    <!-- Outcome panel -->
+    {#if phase === 'resolved' && result}
+      <div class="outcome-panel"
+        class:turnover={result.turnover}
+        class:big-play={result.outcome_type === 'big_play' && !result.turnover}
+      >
+        <div class="outcome-row">
+          <div class="outcome-yards">
+            {#if result.turnover}
+              <span class="yards-num neg">TO</span>
+            {:else}
+              <span class="yards-num" class:neg={result.yards <= 0} class:pos={result.yards > 0}>
+                {result.yards > 0 ? '+' : ''}{result.yards}
+              </span>
+              <span class="yards-unit">yds</span>
+            {/if}
+          </div>
+          <div class="outcome-meta">
+            <span class="outcome-label-badge">{outcomeLabel}</span>
+            <span class="score-badge {scoreClass}">{scoreLabel} · {result.decision_score}/100</span>
+            {#if lastPlayXP > 0}
+              <span class="xp-earned">+{lastPlayXP} XP</span>
+            {/if}
+          </div>
+          <div class="outcome-spacer"></div>
+          <button class="next-btn" onclick={advanceFromResolved}>Next →</button>
+        </div>
+
+        <p class="breakdown-text">{result.breakdown}</p>
+
+        {#if bestCall}
+          <div class="better-call">
+            <span class="better-label">BETTER CALL:</span>
+            <span class="better-name">{bestCall.name}</span>
+            <span class="better-desc">— {bestCall.description}</span>
+          </div>
+        {/if}
+      </div>
+    {/if}
   {/if}
 
 </div>
@@ -283,17 +544,79 @@
     margin: 0 auto;
     padding: 0 1.25rem;
     overflow-y: auto;
-    /* Fixed em base matching original design at 864px stage height:
-       (864 - 56) / 32 ≈ 25px */
     font-size: 25px;
   }
 
-  /* ── Situation strip ─────────────────────────────── */
+  /* ── Score bar ─────────────────────────────────────────────── */
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.3em 0;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .score-group {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3em;
+  }
+
+  .score-side-label {
+    font-size: 0.54em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  .score-num {
+    font-size: 1em;
+    font-weight: 900;
+    font-family: monospace;
+    line-height: 1;
+  }
+
+  .score-num.off { color: var(--off-accent); }
+  .score-num.def { color: var(--accent); }
+
+  .score-sep {
+    font-size: 0.7em;
+    color: var(--text-muted);
+  }
+
+  .score-spacer { flex: 1; }
+
+  .drive-info {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+
+  .drive-label {
+    font-size: 0.56em;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .xp-badge {
+    font-size: 0.56em;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(26,122,60,0.1);
+    color: var(--off-accent);
+    border: 1px solid rgba(26,122,60,0.25);
+  }
+
+  /* ── Situation strip ──────────────────────────────────────── */
   .situation-bar {
     display: flex;
     align-items: center;
     gap: 1.25em;
-    padding: 0.45em 0;
+    padding: 0.35em 0;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
   }
@@ -318,8 +641,6 @@
     font-family: monospace;
   }
 
-  .sit-spacer { flex: 1; }
-
   .side-toggle {
     display: flex;
     box-shadow: var(--neu-inset-sm);
@@ -327,6 +648,7 @@
     overflow: hidden;
     padding: 2px;
     gap: 2px;
+    margin-left: auto;
   }
 
   .side-btn {
@@ -343,18 +665,93 @@
   }
 
   .side-btn:hover { background: rgba(13,35,71,0.07); color: var(--text-primary); }
-  .side-btn.active { background: var(--accent); color: #ffffff; }
+  .side-btn.active { background: var(--accent); color: #fff; }
 
-  /* ── Main body ───────────────────────────────────── */
+  /* ── Playout ──────────────────────────────────────────────── */
+  .playout-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0.5em;
+    min-height: 0;
+  }
+
+  /* ── Drive over ───────────────────────────────────────────── */
+  .drive-over-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7em;
+    padding: 1.5em 1em;
+    text-align: center;
+  }
+
+  .drive-over-title {
+    font-size: 1.6em;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    font-family: monospace;
+  }
+
+  .drive-over-panel.score  .drive-over-title { color: var(--off-accent); }
+  .drive-over-panel.bad    .drive-over-title { color: #b02820; }
+  .drive-over-panel.neutral .drive-over-title { color: var(--text-primary); }
+
+  .drive-over-scores, .drive-over-xp {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4em;
+    font-size: 0.85em;
+  }
+
+  .dos-label {
+    font-size: 0.65em;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .dos-val { color: var(--text-primary); }
+
+  .dos-xp {
+    font-weight: 700;
+    font-family: monospace;
+    color: var(--off-accent);
+  }
+
+  .new-drive-btn {
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    padding: 0.5em 1.2em;
+    font-size: 0.82em;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    font-family: inherit;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 0.4em;
+    box-shadow: 0 4px 14px rgba(13,35,71,0.45);
+    transition: box-shadow 0.15s, transform 0.05s;
+  }
+
+  .new-drive-btn:hover {
+    box-shadow: 0 6px 18px rgba(13,35,71,0.55);
+    transform: translateY(-1px);
+  }
+
+  /* ── Coach body ───────────────────────────────────────────── */
   .coach-body {
     display: grid;
-    /* Left column in em so it scales with font-size (190px ÷ 16px = 11.875em) */
     grid-template-columns: 11.875em 1fr;
     gap: 1em;
     padding-top: 0.6em;
+    min-height: 0;
   }
 
-  /* ── Opponent panel ──────────────────────────────── */
+  /* ── Opponent panel ───────────────────────────────────────── */
   .opponent-panel {
     display: flex;
     flex-direction: column;
@@ -383,11 +780,7 @@
 
   .field-wrap { flex-shrink: 0; }
 
-  .opp-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3em;
-  }
+  .opp-info { display: flex; flex-direction: column; gap: 0.3em; }
 
   .opp-personnel {
     font-size: 0.67em;
@@ -420,13 +813,57 @@
     color: var(--text-primary);
   }
 
-  /* ── Call panel ──────────────────────────────────── */
+  /* ── Call panel ───────────────────────────────────────────── */
   .call-panel {
     display: flex;
     flex-direction: column;
     gap: 0.55em;
   }
 
+  /* 4th down */
+  .fourth-sub {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .fourth-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35em;
+  }
+
+  .fourth-btn {
+    background: var(--bg);
+    border: none;
+    border-radius: 7px;
+    padding: 0.45em 0.75em;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: var(--neu-raised-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 0.1em;
+    transition: box-shadow 0.15s;
+  }
+
+  .fourth-btn:hover { box-shadow: var(--neu-raised); }
+  .fourth-btn.go { outline: 2px solid rgba(13,35,71,0.3); outline-offset: -2px; }
+
+  .fb-name {
+    font-size: 0.8em;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .fourth-btn.go .fb-name { color: var(--accent); }
+
+  .fb-desc {
+    font-size: 0.64em;
+    color: var(--text-muted);
+  }
+
+  /* Formation / play pickers */
   .picker-section {
     display: flex;
     flex-direction: column;
@@ -461,36 +898,18 @@
     gap: 0.4em;
   }
 
-  .formation-btn:hover:not(:disabled) {
-    box-shadow: var(--neu-raised);
-  }
-
+  .formation-btn:hover:not(:disabled) { box-shadow: var(--neu-raised); }
   .formation-btn.selected {
     box-shadow: var(--neu-inset-sm);
     outline: 2px solid var(--accent);
     outline-offset: -2px;
   }
-
   .formation-btn:disabled { opacity: 0.45; cursor: default; }
 
-  .fbn-name {
-    font-size: 0.78em;
-    font-weight: 700;
-    color: var(--text-primary);
-  }
+  .fbn-name { font-size: 0.78em; font-weight: 700; color: var(--text-primary); }
+  .fbn-personnel { font-size: 0.62em; color: var(--text-muted); font-family: monospace; }
 
-  .fbn-personnel {
-    font-size: 0.62em;
-    color: var(--text-muted);
-    font-family: monospace;
-  }
-
-  /* Play list */
-  .play-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.22em;
-  }
+  .play-list { display: flex; flex-direction: column; gap: 0.22em; }
 
   .play-btn {
     background: var(--bg);
@@ -506,37 +925,18 @@
     gap: 0.1em;
   }
 
-  .play-btn:hover:not(:disabled) {
-    box-shadow: var(--neu-raised);
-  }
-
+  .play-btn:hover:not(:disabled) { box-shadow: var(--neu-raised); }
   .play-btn.selected {
     box-shadow: var(--neu-inset-sm);
     outline: 2px solid var(--accent);
     outline-offset: -2px;
   }
-
   .play-btn:disabled { opacity: 0.45; cursor: default; }
 
-  .play-btn-top {
-    display: flex;
-    align-items: center;
-    gap: 0.35em;
-  }
+  .play-btn-top { display: flex; align-items: center; gap: 0.35em; }
+  .play-name { font-size: 0.8em; font-weight: 700; color: var(--text-primary); }
+  .play-desc { font-size: 0.67em; color: var(--text-muted); line-height: 1.3; }
 
-  .play-name {
-    font-size: 0.8em;
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-
-  .play-desc {
-    font-size: 0.67em;
-    color: var(--text-muted);
-    line-height: 1.3;
-  }
-
-  /* Tag pill — px padding intentional (sub-pixel decorative border) */
   .tag {
     font-size: 0.56em;
     font-weight: 700;
@@ -555,7 +955,6 @@
     padding: 0.3em 0;
   }
 
-  /* Run Play button */
   .run-btn {
     background: var(--accent);
     border: none;
@@ -565,7 +964,7 @@
     font-weight: 800;
     letter-spacing: 0.08em;
     font-family: inherit;
-    color: #ffffff;
+    color: #fff;
     cursor: pointer;
     box-shadow: 0 4px 14px rgba(13,35,71,0.45), 0 1px 3px rgba(13,35,71,0.3);
     transition: box-shadow 0.15s, transform 0.05s;
@@ -576,13 +975,10 @@
     box-shadow: 0 6px 18px rgba(13,35,71,0.55), 0 2px 5px rgba(13,35,71,0.3);
     transform: translateY(-1px);
   }
-  .run-btn:active:not(:disabled) {
-    box-shadow: 0 2px 6px rgba(13,35,71,0.3);
-    transform: translateY(0);
-  }
+  .run-btn:active:not(:disabled) { box-shadow: 0 2px 6px rgba(13,35,71,0.3); transform: translateY(0); }
   .run-btn:disabled { opacity: 0.35; cursor: default; }
 
-  /* ── Outcome panel ───────────────────────────────── */
+  /* ── Outcome panel ────────────────────────────────────────── */
   .outcome-panel {
     background: var(--bg);
     box-shadow: var(--neu-raised);
@@ -602,7 +998,6 @@
     box-shadow: 5px 5px 14px var(--shadow-dark), -5px -5px 14px var(--shadow-light), inset 0 3px 0 var(--accent);
   }
 
-  /* Single row: yards | labels | spacer | Next Play */
   .outcome-row {
     display: flex;
     align-items: center;
@@ -626,12 +1021,7 @@
 
   .yards-num.neg { color: #c44; }
   .yards-num.pos { color: var(--off-accent); }
-
-  .yards-unit {
-    font-size: 0.78em;
-    font-weight: 600;
-    color: var(--text-muted);
-  }
+  .yards-unit { font-size: 0.78em; font-weight: 600; color: var(--text-muted); }
 
   .outcome-meta {
     display: flex;
@@ -647,7 +1037,6 @@
     color: var(--text-primary);
   }
 
-  /* px padding intentional — sub-pixel decorative */
   .score-badge {
     font-size: 0.65em;
     font-weight: 700;
@@ -661,6 +1050,17 @@
   .score-badge.neutral   { background: rgba(140,100,0,0.10);  color: #7a5800; border: 1px solid rgba(140,100,0,0.25); }
   .score-badge.poor      { background: rgba(176,40,32,0.10);  color: #b02820; border: 1px solid rgba(176,40,32,0.2); }
 
+  .xp-earned {
+    font-size: 0.62em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--off-accent);
+    padding: 2px 5px;
+    border-radius: 3px;
+    background: rgba(26,122,60,0.08);
+    border: 1px solid rgba(26,122,60,0.2);
+  }
+
   .outcome-spacer { flex: 1; }
 
   .breakdown-text {
@@ -668,7 +1068,6 @@
     color: var(--text-secondary);
     line-height: 1.5;
     margin: 0;
-    /* clamp to 2 lines so it never blows up the panel */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -710,7 +1109,5 @@
     transition: box-shadow 0.15s;
   }
 
-  .next-btn:hover {
-    box-shadow: var(--neu-raised);
-  }
+  .next-btn:hover { box-shadow: var(--neu-raised); }
 </style>
