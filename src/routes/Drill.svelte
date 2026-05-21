@@ -1,5 +1,7 @@
 <script>
   import FormationField from '../lib/components/FormationField.svelte';
+  import BreakdownText from '../lib/components/BreakdownText.svelte';
+  import { recordPlay, getRecommendedDrillIds } from '../lib/progression.js';
   import {
     getOffensePlays, getDefensePlays,
     getOffenseFormations, getDefenseFormations,
@@ -85,7 +87,7 @@
       concept: 'Goal Line Defense',
       description: '3rd & 2 at your own 2-yard line. Give up the touchdown and the game changes.',
       side: 'defense',
-      situation: { down: 3, distance: 2, fieldPosition: 2 },
+      situation: { down: 3, distance: 2, fieldPosition: 98 },
       opponentFormationId: 'goal_line_off',
       teachingPoint: 'Five defensive linemen clog every A, B, and C gap. The compressed field also limits passing angles. This is the defense designed for one job: stop the run at the goal line with maximum bodies at the point of attack.'
     },
@@ -116,6 +118,10 @@
   function saveCompleted() {
     localStorage.setItem('drill_completed', JSON.stringify([...completed]));
   }
+
+  // Mastery-based recommendations (recomputed when drillIndex or phase changes)
+  let recommendedIds = getRecommendedDrillIds();
+  $: isRecommended = recommendedIds.has(drill?.id);
 
   // ── Derived ──────────────────────────────────────────────────
   $: drill = DRILLS[drillIndex];
@@ -181,6 +187,8 @@
     completed.add(drill.id);
     completed = completed;
     saveCompleted();
+    recordPlay(drill.situation, result.decision_score);
+    recommendedIds = getRecommendedDrillIds();
     phase = 'resolved';
   }
 
@@ -219,7 +227,12 @@
   <div class="drill-header">
     <button class="arrow-btn" onclick={prevDrill} title="Previous drill">‹</button>
     <div class="drill-meta">
-      <div class="drill-concept">{drill.concept}</div>
+      <div class="drill-concept-row">
+        <div class="drill-concept">{drill.concept}</div>
+        {#if isRecommended}
+          <span class="rec-badge" title="Recommended based on your mastery data">RECOMMENDED</span>
+        {/if}
+      </div>
       <div class="drill-counter">
         {#each DRILLS as d, i}
           <button
@@ -352,7 +365,7 @@
         <button class="next-drill-btn" onclick={nextDrill}>Next Drill →</button>
       </div>
 
-      <p class="result-breakdown">{result.breakdown}</p>
+      <p class="result-breakdown"><BreakdownText text={result.breakdown} /></p>
 
       {#if bestCall}
         <div class="better-call">
@@ -423,11 +436,28 @@
     gap: 0.3em;
   }
 
+  .drill-concept-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+
   .drill-concept {
     font-size: 0.78em;
     font-weight: 800;
     color: var(--text-primary);
     letter-spacing: 0.02em;
+  }
+
+  .rec-badge {
+    font-size: 0.46em;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 2px 5px;
+    border-radius: 3px;
+    background: rgba(176,80,0,0.1);
+    color: #b05000;
+    border: 1px solid rgba(176,80,0,0.25);
   }
 
   .drill-counter {

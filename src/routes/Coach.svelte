@@ -1,6 +1,8 @@
 <script>
   import FormationField from '../lib/components/FormationField.svelte';
   import Playout from '../lib/components/Playout.svelte';
+  import BreakdownText from '../lib/components/BreakdownText.svelte';
+  import { recordPlay, getOverallAvg } from '../lib/progression.js';
   import {
     getOffensePlays, getDefensePlays,
     getOffenseFormations, getDefenseFormations,
@@ -83,6 +85,8 @@
 
   $: downStr = ['','1st','2nd','3rd','4th'][down] ?? `${down}th`;
   $: fieldStr = fieldPosition <= 50 ? `OWN ${fieldPosition}` : `OPP ${100 - fieldPosition}`;
+
+  let masteryAvg = getOverallAvg();
 
   // Playout props (resolved after animation to avoid flicker)
   $: playoutOffFormation = pendingOff ? getFormationById(pendingOff.formationId) : null;
@@ -242,6 +246,8 @@
     });
     lastPlayXP = calcXP(result.decision_score);
     driveXP += lastPlayXP;
+    recordPlay(situation, result.decision_score);
+    masteryAvg = getOverallAvg();
     phase = 'resolved';
   }
 
@@ -345,6 +351,9 @@
       {#if driveXP > 0}
         <span class="xp-badge">+{driveXP} XP</span>
       {/if}
+      {#if masteryAvg !== null}
+        <span class="mastery-chip" title="Rolling decision score average (last 10 plays)">AVG {masteryAvg}</span>
+      {/if}
     </div>
     <div class="side-toggle">
       <button class="side-btn" class:active={playerSide === 'offense'} onclick={() => setSide('offense')}>Offense</button>
@@ -406,7 +415,7 @@
 
         {#if opponentFormation}
           <div class="field-wrap">
-            <FormationField formation={opponentFormation} compact={true} />
+            <FormationField formation={opponentFormation} compact={true} showTells={true} />
           </div>
           <div class="opp-info">
             <div class="opp-personnel">{opponentFormation.personnelLabel}</div>
@@ -537,7 +546,7 @@
           <button class="next-btn" onclick={advanceFromResolved}>Next →</button>
         </div>
 
-        <p class="breakdown-text">{result.breakdown}</p>
+        <p class="breakdown-text"><BreakdownText text={result.breakdown} /></p>
 
         {#if bestCall}
           <div class="better-call">
@@ -628,6 +637,18 @@
     background: rgba(26,122,60,0.1);
     color: var(--off-accent);
     border: 1px solid rgba(26,122,60,0.25);
+  }
+
+  .mastery-chip {
+    font-size: 0.56em;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(13,35,71,0.07);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    cursor: help;
   }
 
   /* ── Situation strip ──────────────────────────────────────── */
