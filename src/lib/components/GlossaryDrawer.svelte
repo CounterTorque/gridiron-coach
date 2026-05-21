@@ -127,11 +127,18 @@
     color: var(--text-muted);
     font-size: 1rem;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
+    padding: 0;
     line-height: 1;
+    min-width: 32px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    transition: background 0.12s, color 0.12s;
   }
 
-  .close-btn:hover { color: var(--text-primary); }
+  .close-btn:hover { color: var(--text-primary); background: var(--surface-hover); }
 
   .search-wrapper {
     padding: 0.75rem 1.25rem;

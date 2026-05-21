@@ -127,10 +127,10 @@
   </svg>
 
   {#if formation && showTells && formation.tells?.length}
-    <div class="tells-panel">
+    <div class="tells-panel" class:compact>
       <div class="tells-label">TELLS</div>
       <ul class="tells-list">
-        {#each formation.tells as tell}
+        {#each (compact ? formation.tells.slice(0, 2) : formation.tells) as tell}
           <li>{tell}</li>
         {/each}
       </ul>
@@ -153,6 +153,7 @@
     border-radius: 6px;
     display: block;
     box-shadow: var(--neu-raised-sm);
+    overflow: visible;
   }
 
   .player-dot {
@@ -210,5 +211,16 @@
 
   .compact .field-svg {
     border-radius: 2px;
+    height: 160px;
+    width: auto;
+    margin: 0 auto;
+  }
+
+  .compact .tells-panel {
+    padding: 0.4rem 0.6rem;
+  }
+
+  .compact .tells-list li {
+    font-size: 0.72rem;
   }
 </style>

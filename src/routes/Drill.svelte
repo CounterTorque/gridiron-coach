@@ -1,4 +1,5 @@
 <script>
+  import { tick } from 'svelte';
   import FormationField from '../lib/components/FormationField.svelte';
   import BreakdownText from '../lib/components/BreakdownText.svelte';
   import { recordPlay, getRecommendedDrillIds } from '../lib/progression.js';
@@ -109,6 +110,7 @@
   let selectedPlayId = null;
   let result = null;
   let opponentPlayId = null;
+  let resultEl = null;
 
   // Persistent: which drills have been completed
   let completed = new Set(
@@ -163,7 +165,7 @@
     selectedPlayId = null;
   }
 
-  function runPlay() {
+  async function runPlay() {
     if (!selectedFormationId || !selectedPlayId || !opponentFormation) return;
 
     const aiPlay = pickAIPlay(
@@ -190,6 +192,8 @@
     recordPlay(drill.situation, result.decision_score);
     recommendedIds = getRecommendedDrillIds();
     phase = 'resolved';
+    await tick();
+    resultEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   function nextDrill() {
@@ -348,7 +352,7 @@
 
   <!-- Result panel -->
   {#if phase === 'resolved' && result}
-    <div class="result-panel" class:rp-good={result.decision_score >= 70} class:rp-bad={result.decision_score < 50}>
+    <div class="result-panel" bind:this={resultEl} class:rp-good={result.decision_score >= 70} class:rp-bad={result.decision_score < 50}>
       <div class="result-top">
         <div class="result-yards">
           {#if result.turnover}
@@ -462,23 +466,37 @@
 
   .drill-counter {
     display: flex;
-    gap: 0.28em;
+    gap: 0;
   }
 
   .dot-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .dot-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    border: none;
     background: var(--border);
-    cursor: pointer;
-    padding: 0;
     transition: background 0.15s, transform 0.1s;
   }
 
-  .dot-btn.active    { background: var(--accent); transform: scale(1.25); }
-  .dot-btn.done:not(.active) { background: var(--accent-muted); opacity: 0.6; }
-  .dot-btn:hover     { background: var(--accent-muted); }
+  .dot-btn.active::after    { background: var(--accent); transform: translate(-50%, -50%) scale(1.25); }
+  .dot-btn.done:not(.active)::after { background: var(--accent-muted); opacity: 0.6; }
+  .dot-btn:hover::after     { background: var(--accent-muted); }
 
   /* ── Situation strip ──────────────────────────────────────── */
   .sit-bar {

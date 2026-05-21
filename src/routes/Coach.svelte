@@ -1,4 +1,5 @@
 <script>
+  import { tick } from 'svelte';
   import FormationField from '../lib/components/FormationField.svelte';
   import Playout from '../lib/components/Playout.svelte';
   import BreakdownText from '../lib/components/BreakdownText.svelte';
@@ -33,6 +34,8 @@
   let selectedFormationId = null;
   let selectedPlayId = null;
   let result = null;
+
+  let outcomeEl = null;
 
   // Held between runPlay → onPlayoutDone
   let pendingOff = null; // { formationId, playId }
@@ -234,7 +237,7 @@
     phase = 'playout';
   }
 
-  function onPlayoutDone() {
+  async function onPlayoutDone() {
     if (!pendingOff || !pendingDef) return;
     result = resolve({
       offFormationId: pendingOff.formationId,
@@ -249,6 +252,8 @@
     recordPlay(situation, result.decision_score);
     masteryAvg = getOverallAvg();
     phase = 'resolved';
+    await tick();
+    outcomeEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   function advanceFromResolved() {
@@ -520,7 +525,7 @@
 
     <!-- Outcome panel -->
     {#if phase === 'resolved' && result}
-      <div class="outcome-panel"
+      <div class="outcome-panel" bind:this={outcomeEl}
         class:turnover={result.turnover}
         class:big-play={result.outcome_type === 'big_play' && !result.turnover}
       >

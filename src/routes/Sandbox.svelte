@@ -266,6 +266,11 @@
     transition: box-shadow 0.15s, color 0.15s;
   }
 
+  .filter-btn:not(.active):hover {
+    box-shadow: var(--neu-raised);
+    color: var(--text-primary);
+  }
+
   .filter-btn.active {
     background: var(--accent);
     box-shadow: none;
