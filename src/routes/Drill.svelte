@@ -318,7 +318,6 @@
       {:else}
         <!-- Resolved: show selected call as summary -->
         <div class="call-summary">
-          <div class="panel-label">YOUR CALL</div>
           {#if selectedFormationId}
             {@const sf = playerFormations.find(f => f.id === selectedFormationId)}
             {@const sp = playerPlays.find(p => p.id === selectedPlayId)}

@@ -226,7 +226,7 @@
 
     {:else if step.type === 'formation'}
       <div class="col-left">
-        <div class="col-label">{step.formationId.includes('four') || step.formationId.includes('nickel') || step.formationId.includes('stacked') || step.formationId.includes('goal_line_def') ? 'DEFENSE' : 'OFFENSE'}</div>
+        <div class="col-label">{getFormationById(step.formationId)?.side === 'defense' ? 'DEFENSE' : 'OFFENSE'}</div>
         <FormationField formation={getFormationById(step.formationId)} showTells={false} />
         {#if step.callout}
           <div class="callout-box">{step.callout}</div>

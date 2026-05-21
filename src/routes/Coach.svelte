@@ -127,8 +127,7 @@
     const newFP = fieldPosition + playResult.yards;
 
     if (newFP >= 100) {
-      if (playerSide === 'offense') offenseScore += 7;
-      else defenseScore += 7;
+      offenseScore += 7; // offense always scores TDs
       driveStatus = 'touchdown';
       fieldPosition = 100;
       return 'drive_over';
@@ -166,7 +165,28 @@
     pendingOff = null;
     pendingDef = null;
 
-    phase = down === 4 ? 'fourth_down' : 'call';
+    if (down === 4 && playerSide === 'defense') {
+      // AI (opponent offense) decides automatically — defense player doesn't call 4th down
+      aiHandleFourthDown();
+    } else {
+      phase = down === 4 ? 'fourth_down' : 'call';
+    }
+  }
+
+  function aiHandleFourthDown() {
+    const yd = 100 - fieldPosition; // yards to end zone
+    const kickDist = yd + 17;
+    const inRange = yd <= 48;
+    if (inRange && Math.random() < 0.55) {
+      // AI tries field goal
+      chooseFieldGoal();
+    } else if (distance <= 2 && fieldPosition >= 50 && Math.random() < 0.6) {
+      // Short yardage in opponent territory — go for it
+      phase = 'call';
+    } else {
+      // Punt
+      choosePunt();
+    }
   }
 
   function initDrive(startFP = 20, side = playerSide) {
@@ -181,10 +201,10 @@
 
   function setSide(side) {
     if (side === playerSide) return;
-    initDrive(20, side);
     offenseScore = 0;
     defenseScore = 0;
-    driveNumber = 0;
+    driveNumber = 0; // initDrive will increment to 1
+    initDrive(20, side);
   }
 
   // ── Actions ────────────────────────────────────────────────────
@@ -259,8 +279,7 @@
     const kickYards = yardsToGo + 17;
     const prob = Math.max(0.15, 1 - (kickYards - 20) * 0.014);
     if (Math.random() < prob) {
-      if (playerSide === 'offense') offenseScore += 3;
-      else defenseScore += 3;
+      offenseScore += 3; // offense always kicks FGs
       driveStatus = 'field_goal';
     } else {
       driveStatus = 'field_goal_miss';
