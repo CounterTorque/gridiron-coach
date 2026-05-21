@@ -1,6 +1,4 @@
 <script>
-  import PositionTooltip from './PositionTooltip.svelte';
-  import { glossaryOpen, glossaryTerm } from '../stores/ui.js';
   import positionsData from '../../data/positions.json';
 
   export let formation = null;
@@ -9,9 +7,7 @@
 
   let hoveredIdx = null;
 
-  const FIELD_W = 100;
-  const FIELD_H = 110;
-  const LOS_Y = 60; // line of scrimmage y-coordinate
+  const LOS_Y = 60;
 
   const OFF_COLOR = '#1a7a3c';
   const DEF_COLOR = '#0d2347';
@@ -22,14 +18,6 @@
   function onEnter(idx) { hoveredIdx = idx; }
   function onLeave() { hoveredIdx = null; }
 
-  function onClickPosition(abbr) {
-    const pos = positionsData.find(p => p.abbr === abbr);
-    if (pos) {
-      glossaryTerm.set(pos.name);
-      glossaryOpen.set(true);
-    }
-  }
-
   $: isOffense = formation?.side === 'offense';
   $: dotColor = isOffense ? OFF_COLOR : DEF_COLOR;
   $: strokeColor = isOffense ? OFF_STROKE : DEF_STROKE;
@@ -37,94 +25,109 @@
   $: hoveredPos = hoveredIdx !== null && formation?.positions
     ? formation.positions[hoveredIdx]
     : null;
+
+  $: hoveredPosData = hoveredPos
+    ? positionsData.find(p => p.abbr === hoveredPos.abbr)
+    : null;
+
+  // Tooltip position mapping: viewBox y range is 20–90 (height 70)
+  $: ttLeft  = hoveredPos ? hoveredPos.x : 50;
+  $: ttTop   = hoveredPos ? (hoveredPos.y - 20) / 70 * 100 : 50;
+  $: ttAbove = hoveredPos ? hoveredPos.y > 55 : false;
+  // Anchor: left-edge dots (x ≤ 15) pin the tooltip's left side; right-edge (x ≥ 85) pin the right side
+  $: ttEdge  = hoveredPos
+    ? (hoveredPos.x <= 15 ? 'left' : hoveredPos.x >= 85 ? 'right' : 'center')
+    : 'center';
 </script>
 
 <div class="field-wrap" class:compact>
-  <svg
-    viewBox="0 0 100 110"
-    class="field-svg"
-    role="img"
-    aria-label={formation ? `${formation.name} formation diagram` : 'Football field'}
-  >
-    <!-- Field background -->
-    <rect width="100" height="110" fill="#2d7a3a" />
+  <div class="svg-wrap">
+    <svg
+      viewBox="0 20 100 70"
+      class="field-svg"
+      role="img"
+      aria-label={formation ? `${formation.name} formation diagram` : 'Football field'}
+    >
+      <!-- Field background -->
+      <rect x="0" y="20" width="100" height="70" fill="#2d7a3a" />
 
-    <!-- Sidelines -->
-    <line x1="0" y1="0" x2="0" y2="110" stroke="rgba(255,255,255,0.75)" stroke-width="0.5" />
-    <line x1="100" y1="0" x2="100" y2="110" stroke="rgba(255,255,255,0.75)" stroke-width="0.5" />
+      <!-- Sidelines -->
+      <line x1="0" y1="20" x2="0" y2="90" stroke="rgba(255,255,255,0.75)" stroke-width="0.5" />
+      <line x1="100" y1="20" x2="100" y2="90" stroke="rgba(255,255,255,0.75)" stroke-width="0.5" />
 
-    <!-- Horizontal yard lines (every ~5 yds of the visible window) -->
-    {#each [10, 20, 30, 40, 50, 70, 80, 90, 100] as yLine}
-      <line x1="0" y1={yLine} x2="100" y2={yLine} stroke="rgba(255,255,255,0.35)" stroke-width="0.3" />
-    {/each}
-
-    <!-- Hash marks — two columns of vertical ticks, ~35 and ~65 across (NFL hash proportions) -->
-    {#each [10, 20, 30, 40, 50, 70, 80, 90, 100] as yLine}
-      <line x1="36" y1={yLine - 0.7} x2="36" y2={yLine + 0.7} stroke="rgba(255,255,255,0.45)" stroke-width="0.35" />
-      <line x1="64" y1={yLine - 0.7} x2="64" y2={yLine + 0.7} stroke="rgba(255,255,255,0.45)" stroke-width="0.35" />
-    {/each}
-
-    <!-- Neutral zone band -->
-    <rect x="0" y="58.5" width="100" height="3" fill="rgba(255,220,0,0.07)" />
-
-    <!-- Line of scrimmage -->
-    <line x1="0" y1="60" x2="100" y2="60" stroke="rgba(255,255,255,0.8)" stroke-width="0.5" stroke-dasharray="3,2" />
-
-    <!-- "LOS" label -->
-    <text x="1.5" y="59" font-size="1.8" fill="rgba(255,255,255,0.6)" font-family="monospace" opacity="0.9">LOS</text>
-
-    {#if formation}
-      <!-- Player dots -->
-      {#each formation.positions as pos, i}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <g
-          class="player-dot"
-          onmouseenter={() => onEnter(i)}
-          onmouseleave={onLeave}
-          onclick={() => onClickPosition(pos.abbr)}
-          role="button"
-          tabindex="0"
-          onkeydown={(e) => e.key === 'Enter' && onClickPosition(pos.abbr)}
-          aria-label="{pos.abbr} — click for details"
-        >
-          <circle
-            cx={pos.x}
-            cy={pos.y}
-            r="3.2"
-            fill={dotColor}
-            stroke={strokeColor}
-            stroke-width={hoveredIdx === i ? '0.9' : '0.5'}
-            opacity={hoveredIdx === i ? 1 : 0.93}
-          />
-          <text
-            x={pos.x}
-            y={pos.y + 0.4}
-            text-anchor="middle"
-            dominant-baseline="middle"
-            fill={LABEL_COLOR}
-            font-size="1.9"
-            font-weight="700"
-            font-family="monospace"
-            pointer-events="none"
-          >{pos.abbr}</text>
-        </g>
+      <!-- Horizontal yard lines (visible in y=20–90 window) -->
+      {#each [20, 30, 40, 50, 70, 80, 90] as yLine}
+        <line x1="0" y1={yLine} x2="100" y2={yLine} stroke="rgba(255,255,255,0.35)" stroke-width="0.3" />
       {/each}
 
-      <!-- Tooltip for hovered player -->
-      {#if hoveredPos}
-        <PositionTooltip
-          abbr={hoveredPos.abbr}
-          x={hoveredPos.x}
-          y={hoveredPos.y}
-          visible={true}
-        />
+      <!-- Hash marks -->
+      {#each [20, 30, 40, 50, 70, 80, 90] as yLine}
+        <line x1="36" y1={yLine - 0.7} x2="36" y2={yLine + 0.7} stroke="rgba(255,255,255,0.45)" stroke-width="0.35" />
+        <line x1="64" y1={yLine - 0.7} x2="64" y2={yLine + 0.7} stroke="rgba(255,255,255,0.45)" stroke-width="0.35" />
+      {/each}
+
+      <!-- Neutral zone band -->
+      <rect x="0" y="58.5" width="100" height="3" fill="rgba(255,220,0,0.07)" />
+
+      <!-- Line of scrimmage -->
+      <line x1="0" y1="60" x2="100" y2="60" stroke="rgba(255,255,255,0.8)" stroke-width="0.5" stroke-dasharray="3,2" />
+
+      <!-- "LOS" label -->
+      <text x="1.5" y="59" font-size="1.8" fill="rgba(255,255,255,0.6)" font-family="monospace" opacity="0.9">LOS</text>
+
+      {#if formation}
+        <!-- Player dots -->
+        {#each formation.positions as pos, i}
+          <g
+            class="player-dot"
+            role="img"
+            aria-label={pos.abbr}
+            onmouseenter={() => onEnter(i)}
+            onmouseleave={onLeave}
+          >
+            <circle
+              cx={pos.x}
+              cy={pos.y}
+              r="3.2"
+              fill={dotColor}
+              stroke={strokeColor}
+              stroke-width={hoveredIdx === i ? '0.9' : '0.5'}
+              opacity={hoveredIdx === i ? 1 : 0.93}
+            />
+            <text
+              x={pos.x}
+              y={pos.y + 0.4}
+              text-anchor="middle"
+              dominant-baseline="middle"
+              fill={LABEL_COLOR}
+              font-size="1.9"
+              font-weight="700"
+              font-family="monospace"
+              pointer-events="none"
+            >{pos.abbr}</text>
+          </g>
+        {/each}
+      {:else}
+        <text x="50" y="55" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.3)" font-size="4" font-family="sans-serif">
+          Select a formation
+        </text>
       {/if}
-    {:else}
-      <text x="50" y="60" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.3)" font-size="4" font-family="sans-serif">
-        Select a formation
-      </text>
+    </svg>
+
+    <!-- HTML tooltip overlay — real CSS pixels, correct z-index, no SVG scaling issues -->
+    {#if hoveredPos && hoveredPosData}
+      <div
+        class="pos-tooltip"
+        class:above={ttAbove}
+        class:edge-left={ttEdge === 'left'}
+        class:edge-right={ttEdge === 'right'}
+        style="left: {ttLeft}%; top: {ttTop}%;"
+      >
+        <div class="tt-name">{hoveredPosData.name}</div>
+        <div class="tt-resp">{hoveredPosData.responsibilities[0]}</div>
+      </div>
     {/if}
-  </svg>
+  </div>
 
   {#if formation && showTells && formation.tells?.length}
     <div class="tells-panel" class:compact>
@@ -146,6 +149,12 @@
     width: 100%;
   }
 
+  .svg-wrap {
+    position: relative;
+    width: 100%;
+    line-height: 0;
+  }
+
   .field-svg {
     width: 100%;
     height: auto;
@@ -153,20 +162,57 @@
     border-radius: 6px;
     display: block;
     box-shadow: var(--neu-raised-sm);
-    overflow: visible;
   }
 
   .player-dot {
-    cursor: pointer;
+    cursor: default;
   }
 
-  .player-dot:focus {
-    outline: none;
+  .pos-tooltip {
+    position: absolute;
+    transform: translate(-50%, 6px);
+    pointer-events: none;
+    background: rgba(13, 35, 71, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 5px;
+    padding: 5px 8px;
+    width: max-content;
+    max-width: 160px;
+    white-space: normal;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    z-index: 30;
   }
 
-  .player-dot:focus circle {
-    stroke: #ffffff;
-    stroke-width: 0.8px;
+  .pos-tooltip.above {
+    transform: translate(-50%, calc(-100% - 6px));
+  }
+
+  .pos-tooltip.edge-left {
+    transform: translate(-4px, 6px);
+  }
+  .pos-tooltip.edge-left.above {
+    transform: translate(-4px, calc(-100% - 6px));
+  }
+
+  .pos-tooltip.edge-right {
+    transform: translate(calc(-100% + 4px), 6px);
+  }
+  .pos-tooltip.edge-right.above {
+    transform: translate(calc(-100% + 4px), calc(-100% - 6px));
+  }
+
+  .tt-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  .tt-resp {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.4;
   }
 
   .tells-panel {
