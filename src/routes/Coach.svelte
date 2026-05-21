@@ -12,6 +12,18 @@
     getFormationById, getPlayById
   } from '../lib/matchup.js';
 
+  // ── Personnel packages ─────────────────────────────────────────
+  const OFFENSE_PACKAGES = [
+    { id: '11', abbr: '11', name: '11 Personnel', desc: '1 RB · 1 TE · 3 WR', hint: 'Three wide receivers stress any coverage — built for passing situations.', formations: ['shotgun_trips', 'singleback'] },
+    { id: '21', abbr: '21', name: '21 Personnel', desc: '2 RB · 1 TE · 2 WR', hint: 'Fullback adds a lead blocker — balanced run and play-action threat.', formations: ['i_formation', 'singleback'] },
+    { id: '22', abbr: '22', name: '22 Personnel', desc: '2 RB · 2 TE · 1 WR', hint: 'Maximum blockers at the point of attack — goal line and short yardage specialist.', formations: ['goal_line_off'] },
+  ];
+  const DEFENSE_PACKAGES = [
+    { id: 'base', abbr: '4-3', name: 'Base 4-3', desc: '4 DL · 3 LB · 4 DB', hint: 'Balanced against run and pass — the standard starting point for most situations.', formations: ['four_three', 'stacked_box'] },
+    { id: 'nickel', abbr: 'NKL', name: 'Nickel Sub', desc: '4 DL · 2 LB · 5 DB', hint: 'Fifth DB replaces a linebacker — counters 3-WR spread formations.', formations: ['nickel'] },
+    { id: 'heavy', abbr: 'GL', name: 'Goal Line', desc: '5 DL · 3 LB · 3 DB', hint: 'Maximum run-stoppers — deploy when the offense needs inches.', formations: ['goal_line_def'] },
+  ];
+
   // ── Drive state ────────────────────────────────────────────────
   let fieldPosition = 20; // 0=own goal, 100=opponent end zone
   let down = 1;
@@ -23,6 +35,20 @@
   // 'active' | 'first_down' | 'touchdown' | 'turnover' | 'turnover_on_downs' | 'field_goal' | 'field_goal_miss' | 'punt'
   let driveStatus = 'active';
   let lastPlayXP = 0;
+  let totalXP = 0;
+
+  // ── Game clock ─────────────────────────────────────────────────
+  let quarter = 1;
+  let gameClock = 900; // 15:00 in Q1
+  let pendingGameOver = false;
+  let gameOver = false;
+
+  // ── Phase 5 state ──────────────────────────────────────────────
+  let selectedPersonnel = null;
+  let opponentPrePickedPlayId = null;
+  let motionUsed = false;
+  let motionReveal = null; // null | 'man' | 'zone' | 'run_heavy' | 'pass_heavy'
+  let audibleUsed = false;
 
   // ── Round state ────────────────────────────────────────────────
   let playerSide = 'offense';
@@ -89,6 +115,19 @@
   $: downStr = ['','1st','2nd','3rd','4th'][down] ?? `${down}th`;
   $: fieldStr = fieldPosition <= 50 ? `OWN ${fieldPosition}` : `OPP ${100 - fieldPosition}`;
 
+  // ── Phase 5 derived ────────────────────────────────────────────
+  $: packages = playerSide === 'offense' ? OFFENSE_PACKAGES : DEFENSE_PACKAGES;
+  $: currentPackage = packages.find(p => p.id === selectedPersonnel) ?? null;
+  $: filteredFormations = currentPackage
+    ? playerFormations.filter(f => currentPackage.formations.includes(f.id))
+    : playerFormations;
+  $: clockDisplay = `${Math.floor(gameClock / 60)}:${String(gameClock % 60).padStart(2, '0')}`;
+  $: isLateGame = quarter === 4 && gameClock < 300;
+  $: twoMinWarning = quarter === 4 && gameClock <= 120;
+  $: trailingLate = isLateGame && playerScore < oppScore;
+  $: leadingLate = isLateGame && playerScore > oppScore;
+  $: urgencyLabel = trailingLate ? 'HURRY-UP' : leadingLate ? 'PROTECT LEAD' : twoMinWarning ? '2-MIN WARNING' : null;
+
   let masteryAvg = getOverallAvg();
 
   // Playout props (resolved after animation to avoid flicker)
@@ -110,6 +149,7 @@
     : driveStatus === 'turnover'       ? 'TURNOVER'
     : driveStatus === 'turnover_on_downs' ? 'TURNOVER ON DOWNS'
     : driveStatus === 'punt'           ? 'PUNT'
+    : driveStatus === 'time_expired'   ? 'TIME EXPIRED'
     : '';
 
   $: driveOverClass =
@@ -172,6 +212,20 @@
     pendingOff = null;
     pendingDef = null;
 
+    // Phase 5: reset per-play state
+    selectedPersonnel = null;
+    motionUsed = false;
+    motionReveal = null;
+    audibleUsed = false;
+    opponentPrePickedPlayId = null;
+
+    // Pre-pick AI play so motion can reveal coverage type
+    if (opponentFormation) {
+      const side = playerSide === 'offense' ? 'defense' : 'offense';
+      const aiPlay = pickAIPlay(opponentFormation.id, side);
+      opponentPrePickedPlayId = aiPlay?.id ?? null;
+    }
+
     if (down === 4 && playerSide === 'defense') {
       // AI (opponent offense) decides automatically — defense player doesn't call 4th down
       aiHandleFourthDown();
@@ -224,7 +278,9 @@
     if (!selectedFormationId || !selectedPlayId || !opponentFormation) return;
     calledDistance = distance;
 
-    const aiPlay = pickAIPlay(opponentFormation.id, playerSide === 'offense' ? 'defense' : 'offense');
+    const aiPlay = opponentPrePickedPlayId
+      ? { id: opponentPrePickedPlayId }
+      : pickAIPlay(opponentFormation.id, playerSide === 'offense' ? 'defense' : 'offense');
     opponentPlayId = aiPlay?.id ?? null;
 
     const offFormationId = playerSide === 'offense' ? selectedFormationId : opponentFormation.id;
@@ -249,8 +305,11 @@
     });
     lastPlayXP = calcXP(result.decision_score);
     driveXP += lastPlayXP;
+    totalXP += lastPlayXP;
     recordPlay(situation, result.decision_score);
     masteryAvg = getOverallAvg();
+    // Advance game clock ~30-45 seconds per play
+    advanceClock(30 + Math.floor(Math.random() * 15));
     phase = 'resolved';
     await tick();
     outcomeEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -260,6 +319,10 @@
     if (!result) return;
     const next = applyDriveUpdate(result);
     if (next === 'drive_over') {
+      phase = 'drive_over';
+    } else if (pendingGameOver) {
+      // Clock expired mid-drive — end the drive
+      driveStatus = 'time_expired';
       phase = 'drive_over';
     } else if (down === 4) {
       // Next play is 4th down — show choice
@@ -306,6 +369,13 @@
   }
 
   function startNewDrive() {
+    // Consume kickoff/transition time (~2 minutes)
+    advanceClock(90 + Math.floor(Math.random() * 60));
+    if (pendingGameOver) {
+      gameOver = true;
+      return;
+    }
+
     let newSide = playerSide === 'offense' ? 'defense' : 'offense';
     let startFP;
 
@@ -331,6 +401,54 @@
     }
 
     initDrive(startFP, newSide);
+  }
+
+  // ── Phase 5 functions ──────────────────────────────────────────
+  function advanceClock(seconds) {
+    gameClock -= seconds;
+    if (gameClock <= 0) {
+      if (quarter < 4) {
+        quarter++;
+        gameClock = 900;
+      } else {
+        gameClock = 0;
+        pendingGameOver = true;
+      }
+    }
+  }
+
+  function handleMotion() {
+    if (motionUsed || !opponentFormation) return;
+    motionUsed = true;
+    const side = playerSide === 'offense' ? 'defense' : 'offense';
+    const opponentPlays = side === 'defense'
+      ? getDefensePlays(opponentFormation.id)
+      : getOffensePlays(opponentFormation.id);
+    const prePick = opponentPlays.find(p => p.id === opponentPrePickedPlayId);
+    if (!prePick) { motionReveal = playerSide === 'offense' ? 'zone' : 'run_heavy'; return; }
+    if (playerSide === 'offense') {
+      motionReveal = (prePick.type === 'man' || prePick.type === 'pressure') ? 'man' : 'zone';
+    } else {
+      motionReveal = (prePick.type === 'run' || prePick.type === 'option') ? 'run_heavy' : 'pass_heavy';
+    }
+  }
+
+  function handleAudible() {
+    if (audibleUsed) return;
+    audibleUsed = true;
+    selectedPlayId = null;
+  }
+
+  function resetGame() {
+    quarter = 1;
+    gameClock = 900;
+    pendingGameOver = false;
+    gameOver = false;
+    totalXP = 0;
+    offenseScore = 0;
+    defenseScore = 0;
+    driveNumber = 0;
+    initDrive(20, playerSide);
   }
 
   // Initial setup
@@ -376,10 +494,41 @@
       <span class="sit-label">FIELD POS</span>
       <span class="sit-value">{fieldStr}</span>
     </div>
+    <div class="sit-group">
+      <span class="sit-label">Q{quarter}</span>
+      <span class="sit-value" class:clock-urgent={twoMinWarning}>{clockDisplay}</span>
+    </div>
   </div>
 
+  <!-- Late-game urgency strip -->
+  {#if urgencyLabel && phase !== 'drive_over' && !gameOver}
+    <div class="urgency-strip" class:hurry={trailingLate} class:protect={leadingLate} class:warning={twoMinWarning && !trailingLate && !leadingLate}>
+      {urgencyLabel}
+      {#if trailingLate}— need a score, consider aggressive play calls{/if}
+      {#if leadingLate}— protect the football, run the clock{/if}
+      {#if twoMinWarning && !trailingLate && !leadingLate}— clock is a factor now{/if}
+    </div>
+  {/if}
+
+  <!-- ── GAME OVER ────────────────────────────────────────────── -->
+  {#if gameOver}
+    <div class="game-over-panel">
+      <div class="game-over-quarter">FINAL</div>
+      <div class="game-over-score">
+        <span class="go-side off">{offLabel}</span>
+        <span class="go-num off">{offenseScore}</span>
+        <span class="go-dash">–</span>
+        <span class="go-num def">{defenseScore}</span>
+        <span class="go-side def">{defLabel}</span>
+      </div>
+      <div class="go-xp">Total XP earned: <strong>{totalXP}</strong></div>
+      <div class="go-buttons">
+        <button class="new-drive-btn" onclick={resetGame}>New Game →</button>
+      </div>
+    </div>
+
   <!-- ── PLAYOUT phase ─────────────────────────────────────── -->
-  {#if phase === 'playout'}
+  {:else if phase === 'playout'}
     <div class="playout-section">
       <Playout
         offFormation={playoutOffFormation}
@@ -473,51 +622,113 @@
             <span class="panel-label">YOUR CALL</span>
           </div>
 
-          <div class="picker-section">
-            <div class="picker-label">Formation</div>
-            <div class="formation-grid">
-              {#each playerFormations as f}
-                <button
-                  class="formation-btn"
-                  class:selected={selectedFormationId === f.id}
-                  onclick={() => selectFormation(f.id)}
-                  disabled={phase === 'resolved'}
-                >
-                  <span class="fbn-name">{f.name}</span>
-                  <span class="fbn-personnel">{f.personnel}</span>
-                </button>
-              {/each}
-            </div>
-          </div>
-
-          {#if playerPlays.length}
+          <!-- Personnel package picker -->
+          {#if phase === 'call' && !selectedPersonnel}
             <div class="picker-section">
-              <div class="picker-label">Play</div>
-              <div class="play-list">
-                {#each playerPlays as play}
-                  <button
-                    class="play-btn"
-                    class:selected={selectedPlayId === play.id}
-                    onclick={() => (selectedPlayId = play.id)}
-                    disabled={phase === 'resolved'}
-                  >
-                    <div class="play-btn-top">
-                      <span class="play-name">{play.name}</span>
-                      <span class="play-tag tag">{play.tag}</span>
+              <div class="picker-label">Personnel Package</div>
+              <div class="personnel-list">
+                {#each packages as pkg}
+                  <button class="personnel-btn" onclick={() => { selectedPersonnel = pkg.id; }}>
+                    <span class="pkg-abbr">{pkg.abbr}</span>
+                    <div class="pkg-info">
+                      <span class="pkg-name">{pkg.name}</span>
+                      <span class="pkg-desc">{pkg.desc}</span>
                     </div>
-                    <div class="play-desc">{play.description}</div>
                   </button>
                 {/each}
               </div>
             </div>
-          {:else if phase === 'call'}
-            <div class="picker-hint">Pick a formation to see plays</div>
+          {:else if selectedPersonnel && currentPackage}
+            <div class="pkg-selected-row">
+              <span class="pkg-badge">{currentPackage.abbr}</span>
+              <div class="pkg-sel-info">
+                <span class="pkg-sel-name">{currentPackage.name}</span>
+                <span class="pkg-sel-hint">{currentPackage.hint}</span>
+              </div>
+              {#if phase === 'call'}
+                <button class="pkg-change-btn" onclick={() => { selectedPersonnel = null; selectedFormationId = null; selectedPlayId = null; }}>↺</button>
+              {/if}
+            </div>
           {/if}
 
-          {#if phase === 'call'}
-            <button class="run-btn" disabled={!selectedFormationId || !selectedPlayId} onclick={runPlay}>
-              RUN PLAY
-            </button>
+          {#if selectedPersonnel || phase === 'resolved'}
+            <div class="picker-section">
+              <div class="picker-label">Formation</div>
+              <div class="formation-grid">
+                {#each filteredFormations as f}
+                  <button
+                    class="formation-btn"
+                    class:selected={selectedFormationId === f.id}
+                    onclick={() => selectFormation(f.id)}
+                    disabled={phase === 'resolved'}
+                  >
+                    <span class="fbn-name">{f.name}</span>
+                    <span class="fbn-personnel">{f.personnel}</span>
+                  </button>
+                {/each}
+              </div>
+            </div>
+
+            {#if playerPlays.length}
+              <div class="picker-section">
+                <div class="picker-label">Play</div>
+                <div class="play-list">
+                  {#each playerPlays as play}
+                    <button
+                      class="play-btn"
+                      class:selected={selectedPlayId === play.id}
+                      onclick={() => (selectedPlayId = play.id)}
+                      disabled={phase === 'resolved'}
+                    >
+                      <div class="play-btn-top">
+                        <span class="play-name">{play.name}</span>
+                        <span class="play-tag tag">{play.tag}</span>
+                      </div>
+                      <div class="play-desc">{play.description}</div>
+                    </button>
+                  {/each}
+                </div>
+              </div>
+            {:else if phase === 'call' && selectedFormationId}
+              <div class="picker-hint">Pick a formation to see plays</div>
+            {/if}
+
+            {#if phase === 'call'}
+              <!-- Motion reveal -->
+              {#if selectedFormationId && !motionUsed}
+                <button class="motion-btn" onclick={handleMotion}>
+                  Pre-snap Motion →
+                </button>
+              {/if}
+
+              {#if motionReveal}
+                <div class="motion-reveal">
+                  {#if motionReveal === 'man'}
+                    Corner followed the motion — <strong>Man coverage</strong> suspected. Attack with crossing routes or screens.
+                  {:else if motionReveal === 'zone'}
+                    No pursuit on the motion — <strong>Zone coverage</strong> suspected. Attack the soft spots and seams.
+                  {:else if motionReveal === 'run_heavy'}
+                    Extra blockers shifting — <strong>Run tendency</strong> spotted. Consider a run-stop call.
+                  {:else if motionReveal === 'pass_heavy'}
+                    Receivers spreading wide — <strong>Pass tendency</strong> spotted. Consider zone or man coverage.
+                  {/if}
+                </div>
+              {/if}
+
+              <!-- Audible -->
+              {#if selectedPlayId && !audibleUsed}
+                <button class="audible-btn" onclick={handleAudible}>
+                  Audible — Change Play
+                </button>
+              {/if}
+              {#if audibleUsed && !selectedPlayId}
+                <div class="audible-notice">Audible called — pick a new play</div>
+              {/if}
+
+              <button class="run-btn" disabled={!selectedFormationId || !selectedPlayId} onclick={runPlay}>
+                RUN PLAY
+              </button>
+            {/if}
           {/if}
         {/if}
       </div>
@@ -1155,4 +1366,198 @@
   }
 
   .next-btn:hover { box-shadow: var(--neu-raised); }
+
+  /* ── Clock urgency ────────────────────────────────────────── */
+  .clock-urgent { color: #b02820 !important; animation: clock-pulse 1s ease-in-out infinite; }
+  @keyframes clock-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+  .urgency-strip {
+    font-size: 0.65em;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    padding: 0.28em 0.75em;
+    border-radius: 5px;
+    margin: 0.2em 0;
+    flex-shrink: 0;
+  }
+  .urgency-strip.hurry   { background: rgba(176,40,32,0.10); color: #b02820; border: 1px solid rgba(176,40,32,0.25); }
+  .urgency-strip.protect { background: rgba(26,122,60,0.10);  color: #1a7a3c; border: 1px solid rgba(26,122,60,0.25); }
+  .urgency-strip.warning { background: rgba(140,100,0,0.10);  color: #7a5800; border: 1px solid rgba(140,100,0,0.25); }
+
+  /* ── Game over ────────────────────────────────────────────── */
+  .game-over-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75em;
+    padding: 2em 1em;
+    text-align: center;
+  }
+
+  .game-over-quarter {
+    font-size: 0.72em;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--text-muted);
+  }
+
+  .game-over-score {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35em;
+  }
+
+  .go-num {
+    font-size: 2.2em;
+    font-weight: 900;
+    font-family: monospace;
+    line-height: 1;
+  }
+  .go-num.off { color: var(--off-accent); }
+  .go-num.def { color: var(--accent); }
+
+  .go-dash { font-size: 1.4em; color: var(--text-muted); }
+
+  .go-side {
+    font-size: 0.62em;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    align-self: center;
+  }
+
+  .go-xp {
+    font-size: 0.78em;
+    color: var(--text-secondary);
+  }
+
+  .go-xp strong { color: var(--off-accent); }
+
+  .go-buttons { margin-top: 0.5em; }
+
+  /* ── Personnel picker ─────────────────────────────────────── */
+  .personnel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+  }
+
+  .personnel-btn {
+    background: var(--bg);
+    border: none;
+    border-radius: 7px;
+    padding: 0.42em 0.7em;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: var(--neu-raised-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.55em;
+    transition: box-shadow 0.15s;
+  }
+  .personnel-btn:hover { box-shadow: var(--neu-raised); }
+
+  .pkg-abbr {
+    font-size: 0.78em;
+    font-weight: 900;
+    font-family: monospace;
+    color: var(--accent);
+    min-width: 1.8em;
+    text-align: center;
+  }
+
+  .pkg-info { display: flex; flex-direction: column; gap: 0.08em; }
+  .pkg-name { font-size: 0.78em; font-weight: 700; color: var(--text-primary); }
+  .pkg-desc { font-size: 0.62em; color: var(--text-muted); font-family: monospace; }
+
+  /* Selected package banner */
+  .pkg-selected-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.32em 0.65em;
+    background: var(--bg);
+    border-radius: 6px;
+    box-shadow: var(--neu-inset-sm);
+    flex-shrink: 0;
+  }
+
+  .pkg-badge {
+    font-size: 0.7em;
+    font-weight: 900;
+    font-family: monospace;
+    color: var(--accent);
+    background: rgba(13,35,71,0.07);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+  }
+
+  .pkg-sel-info { display: flex; flex-direction: column; gap: 0.06em; flex: 1; min-width: 0; }
+  .pkg-sel-name { font-size: 0.72em; font-weight: 700; color: var(--text-primary); }
+  .pkg-sel-hint { font-size: 0.61em; color: var(--text-muted); line-height: 1.3; }
+
+  .pkg-change-btn {
+    background: none;
+    border: none;
+    font-size: 0.85em;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 0 0.2em;
+    flex-shrink: 0;
+  }
+  .pkg-change-btn:hover { color: var(--text-primary); }
+
+  /* ── Motion button ────────────────────────────────────────── */
+  .motion-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.32em 0.75em;
+    font-size: 0.72em;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-secondary);
+    cursor: pointer;
+    box-shadow: var(--neu-raised-sm);
+    transition: box-shadow 0.12s, color 0.12s;
+    align-self: flex-start;
+  }
+  .motion-btn:hover { box-shadow: var(--neu-raised); color: var(--text-primary); }
+
+  .motion-reveal {
+    font-size: 0.7em;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    background: rgba(13,35,71,0.05);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.4em 0.65em;
+  }
+  .motion-reveal strong { color: var(--text-primary); }
+
+  /* ── Audible button ───────────────────────────────────────── */
+  .audible-btn {
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 0.28em 0.7em;
+    font-size: 0.7em;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.12s, border-color 0.12s;
+    align-self: flex-start;
+  }
+  .audible-btn:hover { color: var(--text-primary); border-color: var(--text-muted); }
+
+  .audible-notice {
+    font-size: 0.67em;
+    color: var(--off-accent);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
 </style>
